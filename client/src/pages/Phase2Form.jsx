@@ -93,7 +93,7 @@ const SECTIONS = [
 
 export default function Phase2Form() {
   const [searchParams] = useSearchParams();
-  const token = searchParams.get('token');
+  const token = searchParams.get('token')?.trim();
   const navigate = useNavigate();
 
   const [loading, setLoading] = useState(true);
