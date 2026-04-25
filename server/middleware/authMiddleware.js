@@ -12,3 +12,17 @@ exports.protect = (req, res, next) => {
     res.status(401).json({ message: 'Token is not valid' });
   }
 };
+
+exports.protectCandidate = (req, res, next) => {
+  const token = req.header('Authorization')?.replace('Bearer ', '');
+  if (!token) return res.status(401).json({ message: 'No candidate token, authorization denied' });
+
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    if (!decoded.candidateId) return res.status(401).json({ message: 'Invalid candidate token format' });
+    req.candidateAuth = { id: decoded.candidateId };
+    next();
+  } catch (error) {
+    res.status(401).json({ message: 'Token is not valid or expired. Please request a new link.' });
+  }
+};

@@ -5,7 +5,7 @@ import {
   ChevronDown, LayoutDashboard, LogOut, X, Check,
   BarChart2, PieChart as PieChartIcon, TrendingUp,
   FileText, Menu, Star, Calendar, Target, Loader2, ChevronLeft, ChevronRight,
-  Settings, Home as HomeIcon, Shield
+  Settings, Home as HomeIcon, Shield, BrainCircuit
 } from 'lucide-react';
 import { 
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, 
@@ -13,7 +13,7 @@ import {
 } from 'recharts';
 import { cn } from '../lib/utils';
 import { 
-  getCandidates, deleteCandidate, updateCandidate, exportCandidatesCSV, exportCandidatesExcel,
+  getCandidates, deleteCandidate, updateCandidate, updateCandidateStatus, exportCandidatesCSV, exportCandidatesExcel,
   getAdminProfile, updateAdminProfile
 } from '../services/api';
 import { useAuth } from '../context/AuthContext';
@@ -119,7 +119,26 @@ const AdminDashboard = () => {
   };
 
   const handleStatusUpdate = async (id, status) => {
-    handleUpdate(id, { status });
+    setIsUpdating(true);
+    try {
+      const response = await updateCandidateStatus(id, { status });
+      const data = response.data || response;
+      
+      const statusLabel = status.includes('Accepted') ? 'acceptée' : status.includes('Rejected') ? 'refusée' : 'mise à jour';
+      const statusIcon = status.includes('Accepted') ? '✅' : status.includes('Rejected') ? '❌' : '🔄';
+      
+      toast.success(`Candidature ${statusLabel}`, { icon: statusIcon });
+      
+      fetchCandidates();
+      if (selectedCandidate?._id === id) {
+        setSelectedCandidate(data);
+      }
+    } catch (error) {
+      toast.error('Erreur lors de la mise à jour du statut');
+      console.error(error);
+    } finally {
+      setIsUpdating(false);
+    }
   };
 
   const handleUpdate = async (id, data) => {
@@ -127,19 +146,7 @@ const AdminDashboard = () => {
     try {
       await updateCandidate(id, data);
       
-      if (data.status) {
-        const statusLabel = data.status === 'Accepted' ? 'acceptée' : 'refusée';
-        const statusIcon = data.status === 'Accepted' ? '✅' : '❌';
-        
-        toast.success(`Candidature ${statusLabel}`, {
-          icon: statusIcon,
-          style: {
-            border: data.status === 'Accepted' ? '1px solid #10b981' : '1px solid #ef4444',
-          }
-        });
-      } else {
-        toast.success('Mis à jour avec succès');
-      }
+      toast.success('Mis à jour avec succès');
       
       fetchCandidates();
       if (selectedCandidate?._id === id) {
@@ -203,9 +210,10 @@ const AdminDashboard = () => {
   }));
 
   const statusStats = [
-    { name: 'En attente', value: candidates.filter(c => c.status === 'Pending').length, color: '#f59e0b' },
-    { name: 'Acceptés', value: candidates.filter(c => c.status === 'Accepted').length, color: '#10b981' },
-    { name: 'Refusés', value: candidates.filter(c => c.status === 'Rejected').length, color: '#ef4444' },
+    { name: 'En attente P1', value: candidates.filter(c => c.status === 'Pending Phase 1').length, color: '#f59e0b' },
+    { name: 'En attente P2', value: candidates.filter(c => c.status === 'Pending Phase 2').length, color: '#8b5cf6' },
+    { name: 'Acceptés', value: candidates.filter(c => c.status === 'Accepted Phase 2' || c.status === 'Accepted Phase 1').length, color: '#10b981' },
+    { name: 'Refusés', value: candidates.filter(c => c.status.startsWith('Rejected')).length, color: '#ef4444' },
   ];
 
   const COLORS = ['#3b82f6', '#8b5cf6', '#10b981', '#f59e0b', '#ec4899'];
@@ -340,10 +348,10 @@ const AdminDashboard = () => {
             {/* Quick Stats Cards */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
               {[
-                { label: 'Total Candidats', value: total, icon: Users, color: 'bg-blue-500' },
-                { label: 'En attente', value: candidates.filter(c => c.status === 'Pending').length, icon: Calendar, color: 'bg-yellow-500' },
-                { label: 'Acceptés', value: candidates.filter(c => c.status === 'Accepted').length, icon: Check, color: 'bg-green-500' },
-                { label: 'Score Moyen', value: (candidates.reduce((acc, c) => acc + (c.score || 0), 0) / (candidates.length || 1)).toFixed(1), icon: Star, color: 'bg-purple-500' },
+                { label: 'En attente P1', value: candidates.filter(c => c.status === 'Pending Phase 1').length, icon: Calendar, color: 'bg-yellow-500' },
+                { label: 'En attente P2', value: candidates.filter(c => c.status === 'Pending Phase 2').length, icon: BrainCircuit, color: 'bg-indigo-500' },
+                { label: 'Acceptés Finaux', value: candidates.filter(c => c.status === 'Accepted Phase 2').length, icon: Check, color: 'bg-green-500' },
+                { label: 'Score Moyen P2', value: (candidates.filter(c => c.totalScore > 0).reduce((acc, c) => acc + (c.totalScore || 0), 0) / (candidates.filter(c => c.totalScore > 0).length || 1)).toFixed(1), icon: Star, color: 'bg-purple-500' },
               ].map((stat, i) => (
                 <motion.div 
                   key={i}
@@ -580,9 +588,10 @@ const AdminDashboard = () => {
                   className="input-field appearance-none px-4 sm:px-6 py-3 sm:py-4 md:py-5 pr-10 sm:pr-12 font-bold text-xs sm:text-sm text-slate-700"
                 >
                   <option value="">Tous les status</option>
-                  <option value="Pending">En attente</option>
-                  <option value="Accepted">Acceptés</option>
-                  <option value="Rejected">Refusés</option>
+                  <option value="Pending Phase 1">En attente P1</option>
+                  <option value="Pending Phase 2">En attente P2</option>
+                  <option value="Accepted Phase 2">Acceptés</option>
+                  <option value="Rejected Phase 1">Refusés P1</option>
                 </select>
                 <ChevronDown className="absolute right-4 sm:right-5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" size="16" />
               </div>
@@ -647,11 +656,12 @@ const AdminDashboard = () => {
                       <td className="py-5">
                         <span className={cn(
                           "px-3 py-1 text-[8px] md:text-[10px] rounded-lg font-black uppercase tracking-widest",
-                          c.status === 'Accepted' ? "bg-green-100 text-green-700 dark:bg-green-900/20 dark:text-green-400" :
-                          c.status === 'Rejected' ? "bg-red-100 text-red-700 dark:bg-red-900/20 dark:text-red-400" :
+                          c.status.includes('Accepted') ? "bg-green-100 text-green-700 dark:bg-green-900/20 dark:text-green-400" :
+                          c.status.includes('Rejected') ? "bg-red-100 text-red-700 dark:bg-red-900/20 dark:text-red-400" :
+                          c.status === 'Pending Phase 2' ? "bg-purple-100 text-purple-700 dark:bg-purple-900/20 dark:text-purple-400" :
                           "bg-yellow-100 text-yellow-700 dark:bg-yellow-900/20 dark:text-yellow-400"
                         )}>
-                          {c.status}
+                          {c.status.replace('Phase ', 'P')}
                         </span>
                       </td>
                       <td className="py-5 pr-6 text-right rounded-r-2xl md:rounded-r-[1.5rem]">
@@ -880,25 +890,63 @@ const AdminDashboard = () => {
                   </div>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                  <div className="space-y-4">
-                    <p className="text-[10px] text-slate-400 uppercase font-black tracking-[0.2em]">Score du Candidat</p>
-                    <div className="flex gap-2">
-                      {[1, 2, 3, 4, 5].map((s) => (
-                        <button
-                          key={s}
-                          onClick={() => handleUpdate(selectedCandidate._id, { score: s })}
-                          className={cn(
-                            "p-2 rounded-xl transition-all active:scale-90",
-                            (selectedCandidate.score || 0) >= s ? "bg-yellow-100 text-yellow-500" : "bg-slate-100 text-slate-300 dark:bg-slate-800"
-                          )}
-                        >
-                          <Star size={24} fill={(selectedCandidate.score || 0) >= s ? "currentColor" : "none"} />
-                        </button>
-                      ))}
-                    </div>
-                  </div>
+                {/* Phase 2 Details */}
+                {selectedCandidate.phase === 2 && (
+                  <>
+                    <div className="space-y-4">
+                      <p className="text-[10px] text-slate-400 uppercase font-black tracking-[0.2em]">Évaluation (Étape 2)</p>
+                      <div className="bg-gradient-to-r from-blue-500/5 to-purple-500/5 p-6 rounded-2xl border border-blue-500/10">
+                        <div className="flex justify-between items-center mb-6">
+                          <div>
+                            <p className="text-3xl font-black text-slate-900 dark:text-white">{selectedCandidate.totalScore} <span className="text-lg text-slate-500">/ 100</span></p>
+                            <p className={cn("text-xs font-bold uppercase tracking-widest mt-1", 
+                              selectedCandidate.classification === 'High Potential' ? 'text-green-500' :
+                              selectedCandidate.classification === 'Medium' ? 'text-yellow-500' : 'text-red-500'
+                            )}>
+                              {selectedCandidate.classification}
+                            </p>
+                          </div>
+                          
+                          <div className="text-right">
+                            <p className="text-xs font-bold text-slate-500 mb-1">Détail Score</p>
+                            <div className="grid grid-cols-2 gap-x-6 gap-y-1 text-[10px] text-slate-400 font-bold">
+                              <span>Motivation: {selectedCandidate.scoreBreakdown?.motivation}/15</span>
+                              <span>Proj: {selectedCandidate.scoreBreakdown?.project}/25</span>
+                              <span>Exp: {selectedCandidate.scoreBreakdown?.experience}/10</span>
+                              <span>Prob: {selectedCandidate.scoreBreakdown?.problemSolving}/20</span>
+                              <span>Pers: {selectedCandidate.scoreBreakdown?.personality}/15</span>
+                              <span>Comm: {selectedCandidate.scoreBreakdown?.communication}/15</span>
+                            </div>
+                          </div>
+                        </div>
 
+                        {selectedCandidate.evaluationSummary && (
+                          <div className="p-4 bg-white dark:bg-slate-900 rounded-xl mb-6">
+                            <p className="text-sm font-medium italic text-slate-600 dark:text-slate-300">"{selectedCandidate.evaluationSummary}"</p>
+                          </div>
+                        )}
+
+                        <div className="space-y-4">
+                          {Object.entries(selectedCandidate.phase2Answers || {}).map(([key, answer]) => answer && (
+                            <details key={key} className="group bg-white dark:bg-slate-900 rounded-xl overflow-hidden [&_summary::-webkit-details-marker]:hidden">
+                              <summary className="flex justify-between items-center font-bold cursor-pointer p-4 select-none">
+                                <span className="capitalize">{key.replace(/([A-Z])/g, ' $1').trim()}</span>
+                                <span className="transition group-open:rotate-180">
+                                  <ChevronDown size={18} />
+                                </span>
+                              </summary>
+                              <div className="p-4 pt-0 text-slate-600 dark:text-slate-400 text-sm whitespace-pre-wrap leading-relaxed">
+                                {answer}
+                              </div>
+                            </details>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  </>
+                )}
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                   <div className="space-y-4">
                     <p className="text-[10px] text-slate-400 uppercase font-black tracking-[0.2em]">Date d'entretien</p>
                     <div className="relative group">
@@ -925,24 +973,55 @@ const AdminDashboard = () => {
                 </div>
               </div>
 
-              <div className="p-6 md:p-8 bg-slate-50/50 dark:bg-slate-800/50 border-t border-slate-100 dark:border-slate-800 flex flex-col sm:flex-row justify-between items-center gap-4">
-                <div className="flex gap-3 md:gap-4 w-full sm:w-auto">
-                  <button 
-                    disabled={isUpdating}
-                    onClick={() => handleStatusUpdate(selectedCandidate._id, 'Accepted')}
-                    className="flex-1 sm:flex-none flex items-center justify-center gap-2 md:gap-3 px-6 md:px-8 py-3 md:py-4 bg-green-600 text-white rounded-2xl md:rounded-[1.5rem] font-black uppercase tracking-widest text-[10px] hover:bg-green-700 transition-all shadow-lg shadow-green-600/20 active:scale-95 disabled:opacity-50"
-                  >
-                    {isUpdating ? <Loader2 className="animate-spin" size={18} /> : <Check size={18} className="md:w-5 md:h-5" />}
-                    Accepter
-                  </button>
-                  <button 
-                    disabled={isUpdating}
-                    onClick={() => handleStatusUpdate(selectedCandidate._id, 'Rejected')}
-                    className="flex-1 sm:flex-none flex items-center justify-center gap-2 md:gap-3 px-6 md:px-8 py-3 md:py-4 bg-red-500 text-white rounded-2xl md:rounded-[1.5rem] font-black uppercase tracking-widest text-[10px] hover:bg-red-600 transition-all shadow-lg shadow-red-500/20 active:scale-95 disabled:opacity-50"
-                  >
-                    {isUpdating ? <Loader2 className="animate-spin" size={18} /> : <X size={18} className="md:w-5 md:h-5" />}
-                    Refuser
-                  </button>
+              <div className="p-6 md:p-8 bg-slate-50/50 dark:bg-slate-800/50 border-t border-slate-100 dark:border-slate-800 flex flex-col sm:flex-row justify-between items-center gap-4 cursor-default">
+                <div className="flex flex-wrap gap-3 md:gap-4 w-full sm:w-auto">
+                  {selectedCandidate.phase === 1 && selectedCandidate.status === 'Pending Phase 1' && (
+                    <>
+                      <button 
+                        disabled={isUpdating}
+                        onClick={() => handleStatusUpdate(selectedCandidate._id, 'Pending Phase 2')}
+                        className="flex-1 sm:flex-none flex items-center justify-center gap-2 md:gap-3 px-6 md:px-8 py-3 md:py-4 bg-blue-600 text-white rounded-2xl md:rounded-[1.5rem] font-black uppercase tracking-widest text-[10px] hover:bg-blue-700 transition-all shadow-lg shadow-blue-600/20 active:scale-95 disabled:opacity-50"
+                      >
+                        {isUpdating ? <Loader2 className="animate-spin" size={18} /> : <BrainCircuit size={18} className="md:w-5 md:h-5" />}
+                        Inviter Phase 2
+                      </button>
+                      <button 
+                        disabled={isUpdating}
+                        onClick={() => handleStatusUpdate(selectedCandidate._id, 'Rejected Phase 1')}
+                        className="flex-1 sm:flex-none flex items-center justify-center gap-2 md:gap-3 px-6 md:px-8 py-3 md:py-4 bg-red-500 text-white rounded-2xl md:rounded-[1.5rem] font-black uppercase tracking-widest text-[10px] hover:bg-red-600 transition-all shadow-lg shadow-red-500/20 active:scale-95 disabled:opacity-50"
+                      >
+                        {isUpdating ? <Loader2 className="animate-spin" size={18} /> : <X size={18} className="md:w-5 md:h-5" />}
+                        Refuser P1
+                      </button>
+                    </>
+                  )}
+
+                  {selectedCandidate.phase === 2 && selectedCandidate.status === 'Pending Phase 2' && (
+                    <>
+                      <button 
+                        disabled={isUpdating}
+                        onClick={() => handleStatusUpdate(selectedCandidate._id, 'Accepted Phase 2')}
+                        className="flex-1 sm:flex-none flex items-center justify-center gap-2 md:gap-3 px-6 md:px-8 py-3 md:py-4 bg-green-600 text-white rounded-2xl md:rounded-[1.5rem] font-black uppercase tracking-widest text-[10px] hover:bg-green-700 transition-all shadow-lg shadow-green-600/20 active:scale-95 disabled:opacity-50"
+                      >
+                        {isUpdating ? <Loader2 className="animate-spin" size={18} /> : <Check size={18} className="md:w-5 md:h-5" />}
+                        Accepter Final
+                      </button>
+                      <button 
+                        disabled={isUpdating}
+                        onClick={() => handleStatusUpdate(selectedCandidate._id, 'Rejected Phase 2')}
+                        className="flex-1 sm:flex-none flex items-center justify-center gap-2 md:gap-3 px-6 md:px-8 py-3 md:py-4 bg-red-500 text-white rounded-2xl md:rounded-[1.5rem] font-black uppercase tracking-widest text-[10px] hover:bg-red-600 transition-all shadow-lg shadow-red-500/20 active:scale-95 disabled:opacity-50"
+                      >
+                        {isUpdating ? <Loader2 className="animate-spin" size={18} /> : <X size={18} className="md:w-5 md:h-5" />}
+                        Refuser P2
+                      </button>
+                    </>
+                  )}
+                  
+                  {(selectedCandidate.status.includes('Accepted') || selectedCandidate.status.includes('Rejected')) && (
+                     <div className="flex items-center gap-2 text-slate-500 text-sm font-bold">
+                        Dossier traité ({selectedCandidate.status})
+                     </div>
+                  )}
                 </div>
                 <button 
                   onClick={() => setCandidateToDelete(selectedCandidate)}

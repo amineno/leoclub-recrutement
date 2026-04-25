@@ -1,15 +1,9 @@
 const Candidate = require('../models/Candidate');
 const { Parser } = require('json2csv');
 const ExcelJS = require('exceljs');
-const nodemailer = require('nodemailer');
-
-const transporter = nodemailer.createTransport({
-  service: 'gmail', // Or your preferred service
-  auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS
-  }
-});
+const { evaluatePhase2 } = require('../services/evaluationService');
+const emailService = require('../services/emailService');
+const { generatePhase2Token } = require('../utils/generateToken');
 
 const getEmailTemplate = (content, title) => `
   <!DOCTYPE html>
@@ -20,7 +14,7 @@ const getEmailTemplate = (content, title) => `
         .header { background-color: #3b82f6; padding: 40px 20px; text-align: center; color: white; }
         .body { padding: 40px 30px; line-height: 1.6; color: #1e293b; background-color: white; }
         .footer { background-color: #f8fafc; padding: 20px; text-align: center; font-size: 12px; color: #64748b; }
-        .button { display: inline-block; padding: 12px 24px; background-color: #3b82f6; color: white; text-decoration: none; border-radius: 8px; font-weight: bold; margin-top: 20px; }
+        .button { display: inline-block; padding: 14px 28px; background-color: #3b82f6; color: white; text-decoration: none; border-radius: 8px; font-weight: bold; margin-top: 20px; text-align: center; }
         .logo-text { font-size: 24px; font-weight: 900; letter-spacing: -1px; margin: 0; text-transform: uppercase; }
         .accent { color: #3b82f6; font-weight: bold; }
       </style>
@@ -29,15 +23,14 @@ const getEmailTemplate = (content, title) => `
       <div class="container">
         <div class="header">
           <h1 class="logo-text">Lions Club</h1>
-          <p style="margin: 5px 0 0 0; font-size: 10px; font-weight: bold; letter-spacing: 2px; text-transform: uppercase; opacity: 0.8;">Recrutement 2026</p>
         </div>
         <div class="body">
           <h2 style="margin-top: 0; color: #0f172a;">${title}</h2>
           ${content}
-          <p style="margin-top: 40px;">Cordialement,<br/><span class="accent">L'équipe Lions Club</span></p>
+          <p style="margin-top: 40px;">Best regards,<br/><span class="accent">The Lions Club Team</span></p>
         </div>
         <div class="footer">
-          © 2026 Lions Club International. Tous droits réservés.
+          © 2026 Lions Club International. All rights reserved.
         </div>
       </div>
     </body>
@@ -62,20 +55,19 @@ exports.apply = async (req, res) => {
     const candidate = new Candidate(req.body);
     await candidate.save();
 
-    // Send email notification
-    if (process.env.EMAIL_USER && process.env.EMAIL_PASS) {
-      const mailOptions = {
-        from: `"Lions Club Recruitment" <${process.env.EMAIL_USER}>`,
+    // Send email notification using Brevo
+    try {
+      await emailService.sendEmail({
         to: email,
-        subject: 'Confirmation de votre candidature - Lions Club',
+        subject: 'Application Received - Lions Club',
         html: getEmailTemplate(`
-          <p>Bonjour <span class="accent">${req.body.firstName}</span>,</p>
-          <p>Nous avons bien reçu votre candidature pour le <b>Lions Club Recruitment 2026</b>.</p>
-          <p>Notre équipe va examiner votre profil avec attention. Votre engagement est le premier pas vers un impact positif dans notre communauté.</p>
-          <p>Vous recevrez une réponse très prochainement concernant la suite de votre processus.</p>
-        `, 'Candidature Reçue !')
-      };
-      transporter.sendMail(mailOptions).catch(err => console.error('Email error:', err));
+          <p>Hello <span class="accent">${req.body.firstName}</span>,</p>
+          <p>We have successfully received your application for the <b>Lions Club Recruitment 2026</b>.</p>
+          <p>Our team will carefully review your profile. You will hear back from us soon regarding the next steps.</p>
+        `, 'Application Received!')
+      });
+    } catch (err) {
+      console.error('Initial application email failed, continuing...', err.message);
     }
 
     res.status(201).json({ message: 'Application submitted successfully!', candidate });
@@ -135,36 +127,156 @@ exports.getCandidateById = async (req, res) => {
 exports.updateCandidate = async (req, res) => {
   try {
     const candidate = await Candidate.findByIdAndUpdate(req.params.id, req.body, { new: true });
-    
-    // Send email if status changed
-    if (req.body.status && process.env.EMAIL_USER && process.env.EMAIL_PASS) {
-      const isAccepted = req.body.status === 'Accepted';
-      const mailOptions = {
-        from: `"Lions Club Recruitment" <${process.env.EMAIL_USER}>`,
-        to: candidate.email,
-        subject: isAccepted ? 'Félicitations ! Votre candidature a été retenue' : 'Mise à jour concernant votre candidature',
-        html: getEmailTemplate(`
-          <p>Bonjour <span class="accent">${candidate.firstName}</span>,</p>
-          <p>${isAccepted 
-            ? 'Nous avons le plaisir de vous annoncer que votre candidature a été <b style="color: #10b981;">acceptée</b> ! Bienvenue au Lions Club.' 
-            : 'Nous vous remercions de l\'intérêt que vous portez au Lions Club. Malheureusement, nous ne pouvons pas donner suite à votre candidature pour le moment.'}</p>
-          
-          ${isAccepted && candidate.interviewDate ? `
-            <div style="background-color: #f0f9ff; padding: 20px; border-radius: 12px; margin-top: 20px; border: 1px solid #bae6fd;">
-              <p style="margin: 0; font-weight: bold; color: #0369a1;">Détails de votre entretien :</p>
-              <p style="margin: 10px 0 0 0; font-size: 18px; color: #0c4a6e;">📅 <b>${new Date(candidate.interviewDate).toLocaleString('fr-FR', { dateStyle: 'long', timeStyle: 'short' })}</b></p>
-            </div>
-          ` : ''}
+    res.json(candidate);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
 
-          <p style="margin-top: 30px;">${isAccepted 
-            ? 'Nous sommes impatients de vous rencontrer et de commencer à travailler ensemble sur nos projets humanitaires.' 
-            : 'Nous vous souhaitons beaucoup de succès dans vos futurs projets.'}</p>
-        `, isAccepted ? 'Félicitations ! 🎉' : 'Mise à jour de votre dossier')
-      };
-      transporter.sendMail(mailOptions).catch(err => console.error('Email error:', err));
+/**
+ * Update Candidate Status & TRIGGER EMAILS
+ */
+exports.updateCandidateStatus = async (req, res) => {
+  try {
+    const { status } = req.body;
+    let candidate = await Candidate.findById(req.params.id);
+    
+    if (!candidate) return res.status(404).json({ message: 'Candidate not found' });
+    
+    // Check if status is actually changing
+    if (candidate.status === status) {
+      return res.json(candidate);
     }
 
+    // 1. Accepted Phase 1 (Move to Phase 2 -> status: 'Pending Phase 2') OR general 'accepted'
+    if (status === 'accepted' || status === 'Pending Phase 2' || status === 'Accepted Phase 1') {
+      const token = generatePhase2Token(candidate);
+      candidate.magicToken = token;
+      candidate.tokenExpiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours
+      candidate.phase = 2;
+      candidate.status = 'Pending Phase 2'; // Formal schema state
+      
+      const appUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
+      const magicLink = `${appUrl}/continue?token=${token}`;
+      
+      try {
+        await emailService.sendEmail({
+          to: candidate.email,
+          subject: "You're Accepted 🎉 (Phase 2 Access)",
+          html: getEmailTemplate(`
+            <p>Congratulations <span class="accent">${candidate.firstName}</span>!</p>
+            <p>We are thrilled to inform you that your initial profile has successfully passed our review. You are now invited to <b>Phase 2</b> of our recruitment process.</p>
+            <p>This phase is an advanced evaluation to understand your psychological reasoning, motivations, and problem-solving skills.</p>
+            <div style="text-align: center;">
+              <a href="${magicLink}" class="button">Access Phase 2 Evaluation</a>
+            </div>
+            <p style="font-size: 11px; margin-top: 30px; color: #94a3b8;">This secure link will expire in 24 hours. Do not share it.</p>
+          `, 'Welcome to Phase 2')
+        });
+      } catch(e) { console.error('Failed to send phase 2 email:', e); }
+    }
+    
+    // 2. Rejected
+    else if (status === 'rejected' || status === 'Rejected Phase 1' || status === 'Rejected Phase 2') {
+      candidate.status = status.startsWith('Rejected') ? status : 'Rejected Phase 1';
+      
+      try {
+        await emailService.sendEmail({
+          to: candidate.email,
+          subject: "Update regarding your application",
+          html: getEmailTemplate(`
+            <p>Dear <span class="accent">${candidate.firstName}</span>,</p>
+            <p>Thank you for taking the time to apply to the Lions Club. We appreciate your interest and the effort you put into your application.</p>
+            <p>After careful consideration, we regret to inform you that we will not be moving forward with your application at this time. The selection process was highly competitive this year.</p>
+            <p>We wish you the very best in your future endeavors.</p>
+          `, 'Application Update')
+        });
+      } catch(e) { console.error('Failed to send rejection email:', e); }
+    }
+    
+    // 3. Accepted Final / Phase 2
+    else if (status === 'Accepted Phase 2') {
+      candidate.status = 'Accepted Phase 2';
+      try {
+        await emailService.sendEmail({
+          to: candidate.email,
+          subject: "Final Acceptance 🎉 Welcome to the Club!",
+          html: getEmailTemplate(`
+            <p>Dear <span class="accent">${candidate.firstName}</span>,</p>
+            <p>We have truly enjoyed getting to know you. Your Phase 2 evaluation was exactly what we were looking for!</p>
+            <p>We are delighted to officially <b style="color: #10b981;">accept</b> you into the Lions Club.</p>
+            <p>Our team will contact you shortly with the onboarding details and upcoming meeting schedules.</p>
+          `, 'Congratulations! 🚀')
+        });
+      } catch(e) { console.error('Failed to send final accept email:', e); }
+    }
+    
+    // Default Status update without specific email
+    else {
+      candidate.status = status;
+    }
+
+    await candidate.save();
     res.json(candidate);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+exports.phase2Verify = async (req, res) => {
+  try {
+    const candidate = await Candidate.findById(req.candidateAuth.id);
+    if (!candidate) return res.status(404).json({ message: 'Candidate not found.' });
+
+    // Ensure candidate is in right status
+    if (candidate.status !== 'Pending Phase 2') {
+      return res.status(400).json({ message: 'Lien invalide ou candidature déjà soumise.' });
+    }
+
+    res.json({ message: 'Valid token', candidate });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+exports.phase2Submit = async (req, res) => {
+  try {
+    const candidate = await Candidate.findById(req.candidateAuth.id);
+    if (!candidate) return res.status(404).json({ message: 'Candidate not found.' });
+    
+    if (candidate.status !== 'Pending Phase 2') {
+      return res.status(400).json({ message: 'Étape 2 déjà soumise.' });
+    }
+
+    const { phase2Answers } = req.body;
+    const evaluation = evaluatePhase2(phase2Answers);
+
+    const updatedCandidate = await Candidate.findByIdAndUpdate(candidate._id, {
+      phase2Answers,
+      totalScore: evaluation.totalScore,
+      scoreBreakdown: evaluation.breakdown,
+      classification: evaluation.classification,
+      evaluationSummary: evaluation.summary,
+      status: 'Pending Phase 2', // Admin will have to make a final review, or we can use another intermediate status
+      magicToken: null, // Invalidate token after submission
+      tokenExpiresAt: null
+    }, { new: true });
+
+    res.json({ message: 'Phase 2 submitted successfully!', candidate: updatedCandidate });
+    
+    // Send Phase 2 Submission Confirmation
+    try {
+      await emailService.sendEmail({
+        to: updatedCandidate.email,
+        subject: "Phase 2 Evaluation Received",
+        html: getEmailTemplate(`
+          <p>Dear <span class="accent">${updatedCandidate.firstName}</span>,</p>
+          <p>We confirm the submission of your Phase 2 evaluation. Thank you for your time and effort!</p>
+          <p>Our team will review your detailed answers and we will inform you of the final decision shortly.</p>
+        `, 'Phase 2 Received')
+      });
+    } catch(e) { console.error('Failed to send phase 2 confirmation email:', e); }
+
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -340,5 +452,26 @@ exports.exportCSV = async (req, res) => {
     res.send(Buffer.from('\uFEFF' + finalCsv, 'utf-8'));
   } catch (error) {
     res.status(500).json({ message: error.message });
+  }
+};
+
+/**
+ * Test Route for Email Service
+ */
+exports.testEmail = async (req, res) => {
+  try {
+    const to = "developer@yopmail.com"; // Default test email
+    await emailService.sendEmail({
+      to,
+      subject: "Test Email from Development",
+      html: getEmailTemplate(`
+        <p>This is a test email sent from the Recruitment Platform.</p>
+        <p>If you see this, your Brevo API key and configuration are working.</p>
+      `, "Email Service Working")
+    });
+    
+    res.json({ message: `Test email sent successfully to ${to}` });
+  } catch (error) {
+    res.status(500).json({ message: error.message, details: 'Email service test failed.' });
   }
 };

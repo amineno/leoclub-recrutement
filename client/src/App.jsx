@@ -5,6 +5,7 @@ import SuccessPage from './pages/SuccessPage';
 import AdminLogin from './pages/AdminLogin';
 import AdminDashboard from './pages/AdminDashboard';
 import LandingPage from './pages/LandingPage';
+import Phase2Form from './pages/Phase2Form';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { Toaster } from 'react-hot-toast';
 
@@ -31,6 +32,7 @@ function App() {
           <Route path="/" element={<LandingPage />} />
           <Route path="/apply" element={<RecruitmentForm />} />
           <Route path="/success" element={<SuccessPage />} />
+          <Route path="/continue" element={<Phase2Form />} />
           <Route path="/admin/login" element={<AdminLogin />} />
           <Route 
             path="/admin/dashboard" 

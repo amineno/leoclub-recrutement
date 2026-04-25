@@ -103,7 +103,8 @@ const RecruitmentForm = () => {
       navigate('/success');
     } catch (error) {
       console.error(error);
-      toast.error("Une erreur est survenue lors de la soumission.");
+      const errMessage = error.response?.data?.message || "Une erreur est survenue lors de la soumission.";
+      toast.error(errMessage);
     } finally {
       setIsSubmitting(false);
     }
