@@ -22,6 +22,7 @@ const getEmailTemplate = (content, title) => `
     <body>
       <div class="container">
         <div class="header">
+          <img src="${process.env.FRONTEND_URL || 'http://localhost:5173'}/lionsClub-removebg-preview.png" alt="Lions Club" style="height: 80px; margin-bottom: 10px; filter: brightness(0) invert(1);" />
           <h1 class="logo-text">Lions Club</h1>
         </div>
         <div class="body">
