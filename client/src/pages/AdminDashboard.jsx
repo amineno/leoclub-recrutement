@@ -949,31 +949,22 @@ const AdminDashboard = () => {
                   </>
                 )}
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                  <div className="space-y-4">
-                    <p className="text-[10px] text-slate-400 uppercase font-black tracking-[0.2em]">Date d'entretien</p>
-                    <div className="relative group">
-                      <Calendar className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-primary transition-colors" size={20} />
-                      <input 
-                        type="datetime-local"
-                        value={selectedCandidate.interviewDate ? new Date(selectedCandidate.interviewDate).toISOString().slice(0, 16) : ''}
-                        onChange={(e) => handleUpdate(selectedCandidate._id, { interviewDate: e.target.value })}
-                        className="input-field pl-12 p-4 text-sm font-bold"
-                      />
+                {selectedCandidate.status === 'Accepted Phase 2' && (
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-6">
+                    <div className="p-4 bg-green-50 dark:bg-green-900/10 border border-green-100 dark:border-green-800/30 rounded-2xl">
+                      <p className="text-[10px] text-green-600 dark:text-green-400 uppercase font-black tracking-widest mb-1">Date d'entretien</p>
+                      <p className="text-sm font-bold text-slate-900 dark:text-white">
+                        {selectedCandidate.interviewDate ? new Date(selectedCandidate.interviewDate).toLocaleString('fr-FR', { dateStyle: 'long', timeStyle: 'short' }) : 'Non planifié'}
+                      </p>
+                    </div>
+                    <div className="p-4 bg-blue-50 dark:bg-blue-900/10 border border-blue-100 dark:border-blue-800/30 rounded-2xl">
+                        <p className="text-[10px] text-blue-600 dark:text-blue-400 uppercase font-black tracking-widest mb-1">Note Envoyée</p>
+                        <p className="text-sm font-medium text-slate-700 dark:text-slate-300 italic">
+                          "{selectedCandidate.adminComment || 'Aucun commentaire'}"
+                        </p>
                     </div>
                   </div>
-                </div>
-
-                <div className="space-y-4">
-                  <p className="text-[10px] text-slate-400 uppercase font-black tracking-[0.2em]">Commentaires Admin</p>
-                  <textarea 
-                    value={selectedCandidate.notes || ''}
-                    onChange={(e) => setSelectedCandidate({ ...selectedCandidate, notes: e.target.value })}
-                    onBlur={() => handleUpdate(selectedCandidate._id, { notes: selectedCandidate.notes })}
-                    placeholder="Saisissez vos observations ici..."
-                    className="input-field p-4 md:p-6 min-h-[120px] md:min-h-[150px] resize-none text-base md:text-lg font-medium"
-                  />
-                </div>
+                )}
               </div>
 
               <div className="p-6 md:p-8 bg-slate-50/50 dark:bg-slate-800/50 border-t border-slate-100 dark:border-slate-800 flex flex-col sm:flex-row justify-between items-center gap-4 cursor-default">
