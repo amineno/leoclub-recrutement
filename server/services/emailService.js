@@ -1,40 +1,39 @@
-const SibApiV3Sdk = require('sib-api-v3-sdk');
+const nodemailer = require('nodemailer');
 
-// Initialize Brevo SDK
-const defaultClient = SibApiV3Sdk.ApiClient.instance;
-const apiKey = defaultClient.authentications['api-key'];
-apiKey.apiKey = process.env.BREVO_API_KEY;
-
-const apiInstance = new SibApiV3Sdk.TransactionalEmailsApi();
+// Initialize Nodemailer transporter with Gmail SMTP
+const transporter = nodemailer.createTransport({
+  service: 'gmail',
+  auth: {
+    user: process.env.GMAIL_EMAIL,       // e.g. leoclub.recrutement2026@gmail.com
+    pass: process.env.GMAIL_APP_PASSWORD // 16-character app password (NOT your real password)
+  }
+});
 
 /**
- * Reusable function to send an email via Brevo
+ * Reusable function to send an email via Nodemailer
  * @param {Object} options - Email options { to: string, subject: string, html: string }
  * @returns {Promise<Object>} API response
  */
 exports.sendEmail = async ({ to, subject, html }) => {
   try {
-    if (!process.env.BREVO_API_KEY) {
-      console.warn('BREVO_API_KEY is not defined. Email will not be sent.');
+    if (!process.env.GMAIL_EMAIL || !process.env.GMAIL_APP_PASSWORD) {
+      console.warn('GMAIL_EMAIL or GMAIL_APP_PASSWORD is not defined in .env! Email will not be sent.');
       return null;
     }
 
-    const sendSmtpEmail = new SibApiV3Sdk.SendSmtpEmail();
-
-    sendSmtpEmail.subject = subject;
-    sendSmtpEmail.htmlContent = html;
-    sendSmtpEmail.sender = {
-      name: 'Leo Club Recruitment',
-      email: 'leoclub.recrutement2026@gmail.com'
+    const mailOptions = {
+      from: `"Leo Club Recruitment" <${process.env.GMAIL_EMAIL}>`, // Sender identity
+      to, // Receiver
+      subject,
+      html
     };
-    sendSmtpEmail.to = [{ email: to }];
 
-    console.log(`Sending email to ${to} using Brevo...`);
-    const result = await apiInstance.sendTransacEmail(sendSmtpEmail);
-    console.log(`Email successfully sent to ${to}. Message ID: ${result.messageId}`);
-    return result;
+    console.log(`Sending email to ${to} using Nodemailer...`);
+    const info = await transporter.sendMail(mailOptions);
+    console.log(`Email successfully sent! Message ID: ${info.messageId}`);
+    return info;
   } catch (error) {
-    console.error('Error sending email with Brevo:', error.response?.body || error.message);
+    console.error('Error sending email with Nodemailer:', error.message);
     throw new Error('Failed to send email');
   }
 };
