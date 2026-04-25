@@ -102,16 +102,7 @@ export default function Phase2Form() {
   const [sections, setSections] = useState(SECTIONS);
   const [currentStep, setCurrentStep] = useState(0);
   
-  const [answers, setAnswers] = useState({
-    motivation: '',
-    experience: '',
-    personalityTeamwork: '',
-    projectIdeation: '',
-    expectationsSkills: '',
-    behavioralThinking: '',
-    situationalProblemSolving: '',
-    communication: ''
-  });
+  const [answers, setAnswers] = useState({});
 
   useEffect(() => {
     if (!token) {
@@ -122,7 +113,8 @@ export default function Phase2Form() {
 
     const verifyToken = async () => {
       try {
-        const res = await fetch(`http://localhost:5000/api/candidates/phase2-verify`, {
+        const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+        const res = await fetch(`${API_URL}/candidates/phase2-verify`, {
           method: 'POST',
           headers: { 'Authorization': `Bearer ${token}` }
         });
@@ -203,13 +195,26 @@ export default function Phase2Form() {
   const handleSubmit = async () => {
     try {
       setSubmitting(true);
-      const res = await fetch('http://localhost:5000/api/candidates/phase2-submit', {
+      
+      const formattedAnswers = {};
+      sections.forEach(sec => {
+        if (!sec.questions) return;
+        let combined = '';
+        sec.questions.forEach((q, idx) => {
+          const val = answers[`${sec.id}_${idx}`] || 'Non répondu';
+          combined += `Question: ${q}\nRéponse: ${val}\n\n`;
+        });
+        formattedAnswers[sec.id] = combined.trim();
+      });
+
+      const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+      const res = await fetch(`${API_URL}/candidates/phase2-submit`, {
         method: 'POST',
         headers: { 
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}` 
         },
-        body: JSON.stringify({ phase2Answers: answers })
+        body: JSON.stringify({ phase2Answers: formattedAnswers })
       });
       
       const data = await res.json();
@@ -236,17 +241,19 @@ export default function Phase2Form() {
   }
 
   const currentSection = sections[currentStep];
-  const currentAnswer = answers[currentSection.id];
-  const wordCount = currentAnswer.trim() ? currentAnswer.trim().split(/\s+/).length : 0;
+  const wordCount = currentSection.questions ? currentSection.questions.reduce((total, q, idx) => {
+    const text = answers[`${currentSection.id}_${idx}`] || '';
+    return total + (text.trim() ? text.trim().split(/\s+/).length : 0);
+  }, 0) : 0;
   const progress = ((currentStep + 1) / sections.length) * 100;
 
   return (
-    <div className="min-h-screen bg-[#020617] text-white selection:bg-blue-500/30 overflow-hidden relative font-sans">
+    <div className="min-h-screen bg-[#020617] text-white selection:bg-blue-500/30 overflow-x-hidden overflow-y-auto relative font-sans">
       {/* Dynamic Background Elements */}
-      <div className="absolute top-[-10%] right-[-5%] w-[600px] h-[600px] bg-blue-600/10 rounded-full blur-[120px] pointer-events-none" />
-      <div className="absolute bottom-[-10%] left-[-10%] w-[500px] h-[500px] bg-purple-600/10 rounded-full blur-[100px] pointer-events-none" />
+      <div className="fixed top-[-10%] right-[-5%] w-[600px] h-[600px] bg-blue-600/10 rounded-full blur-[120px] pointer-events-none" />
+      <div className="fixed bottom-[-10%] left-[-10%] w-[500px] h-[500px] bg-purple-600/10 rounded-full blur-[100px] pointer-events-none" />
       
-      <div className="max-w-4xl mx-auto px-6 py-12 relative z-10 flex flex-col h-screen">
+      <div className="max-w-4xl mx-auto px-4 md:px-6 py-8 md:py-12 relative z-10 flex flex-col min-h-screen">
         
         {/* Header */}
         <header className="mb-12 flex items-center justify-between">
@@ -298,37 +305,33 @@ export default function Phase2Form() {
                 <h2 className="text-2xl font-bold text-white">{currentSection.title}</h2>
               </div>
 
-              <div className="flex-1 bg-white/[0.02] border border-white/5 rounded-3xl p-6 backdrop-blur-md shadow-2xl relative overflow-hidden group focus-within:border-blue-500/30 transition-colors duration-500 flex flex-col">
+              <div className="flex-1 bg-white/[0.02] border border-white/5 rounded-3xl p-4 md:p-6 backdrop-blur-md shadow-2xl relative overflow-hidden group focus-within:border-blue-500/30 transition-colors duration-500 flex flex-col h-full overflow-y-auto custom-scrollbar">
                 
-                {/* Render specific questions for this section */}
-                {currentSection.questions && (
-                  <div className="mb-6 pb-6 border-b border-white/5">
-                    <h3 className="text-sm font-bold text-slate-400 mb-3 tracking-wider">QUESTIONS À RÉPONDRE</h3>
-                    <ul className="space-y-3">
-                      {currentSection.questions.map((q, idx) => (
-                        <li key={idx} className="text-slate-200 font-medium leading-relaxed bg-white/5 p-3 rounded-xl border border-white/5 shadow-sm">
-                          {q}
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
+                {/* Render specific questions with their individual inputs */}
+                <div className="space-y-6 pb-20">
+                  {currentSection.questions?.map((q, idx) => {
+                    const ansKey = `${currentSection.id}_${idx}`;
+                    return (
+                      <div key={idx} className="bg-white/[0.03] border border-white/10 rounded-2xl p-5 shadow-lg group-focus-within:border-white/20 transition-all">
+                        <h3 className="text-slate-200 text-base md:text-lg font-bold mb-4 leading-relaxed">{q}</h3>
+                        <textarea
+                          value={answers[ansKey] || ''}
+                          onChange={(e) => setAnswers({ ...answers, [ansKey]: e.target.value })}
+                          placeholder="Votre réponse..."
+                          className="w-full min-h-[140px] bg-black/20 border border-white/5 rounded-xl p-4 resize-y outline-none text-base md:text-lg text-slate-300 placeholder:text-slate-600 focus:bg-black/40 focus:border-blue-500/50 transition-all font-light"
+                        />
+                      </div>
+                    )
+                  })}
+                </div>
 
-                <textarea
-                  autoFocus
-                  value={currentAnswer}
-                  onChange={(e) => setAnswers({ ...answers, [currentSection.id]: e.target.value })}
-                  placeholder={currentSection.placeholder || "Vos réponses ici..."}
-                  className="w-full flex-1 min-h-[250px] bg-transparent resize-none outline-none text-lg md:text-xl text-slate-300 placeholder:text-slate-600 leading-relaxed font-light"
-                />
-                
                 {/* Word Count Indicator */}
-                <div className={`absolute bottom-6 right-6 px-4 py-1.5 rounded-full text-xs font-semibold backdrop-blur-md border transition-all duration-300 ${
+                <div className={`absolute bottom-6 right-6 px-5 py-2 rounded-full text-xs font-bold backdrop-blur-xl border border-white/10 shadow-2xl transition-all duration-300 z-20 ${
                   wordCount < currentSection.minWords 
-                    ? 'bg-orange-500/10 border-orange-500/20 text-orange-400' 
-                    : 'bg-green-500/10 border-green-500/20 text-green-400'
+                    ? 'bg-orange-600/20 text-orange-400' 
+                    : 'bg-green-600/20 text-green-400'
                 }`}>
-                  {wordCount} / {currentSection.minWords}+ words
+                  {wordCount} / {currentSection.minWords}+ mots (Total de la page)
                 </div>
               </div>
             </motion.div>

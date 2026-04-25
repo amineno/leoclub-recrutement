@@ -283,6 +283,44 @@ exports.phase2Submit = async (req, res) => {
       });
     } catch(e) { console.error('Failed to send phase 2 confirmation email:', e); }
 
+    // NOTIFY ADMIN WITH A FULL COPY OF THE ANSWERS
+    try {
+      const adminEmail = process.env.ADMIN_EMAIL || process.env.GMAIL_EMAIL || 'admin@leoclub.com';
+      
+      let answersHtml = '';
+      for (const [key, val] of Object.entries(phase2Answers)) {
+        if (val) {
+          answersHtml += `<h3 style="color:#3b82f6; margin-top:20px; text-transform:uppercase;">${key}</h3>
+                          <div style="background-color:#f8fafc; padding:15px; border-radius:8px; white-space:pre-wrap; border-left: 4px solid #3b82f6; color:#334155; font-size:14px;">${val}</div>`;
+        }
+      }
+
+      await emailService.sendEmail({
+        to: adminEmail,
+        subject: `🚨 [PHASE 2 SOUMISE] - ${updatedCandidate.firstName} ${updatedCandidate.lastName}`,
+        html: `
+          <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; color: #1e293b;">
+            <h2 style="color: #0f172a;">Nouvelle Évaluation Phase 2 Terminée !</h2>
+            <div style="background: #eff6ff; padding: 15px; border-radius: 8px; margin-bottom: 25px;">
+              <p style="margin:5px 0;"><strong>👤 Candidat :</strong> ${updatedCandidate.firstName} ${updatedCandidate.lastName}</p>
+              <p style="margin:5px 0;"><strong>📧 Email :</strong> ${updatedCandidate.email}</p>
+              <p style="margin:5px 0;"><strong>⭐ Score Automatique :</strong> ${evaluation.totalScore} / 100</p>
+              <p style="margin:5px 0;"><strong>📊 Classification :</strong> ${evaluation.classification}</p>
+            </div>
+            
+            <h2 style="border-bottom: 2px solid #e2e8f0; padding-bottom: 10px;">Réponses Complètes du Candidat</h2>
+            ${answersHtml}
+            
+            <div style="text-align: center; margin-top: 40px;">
+              <a href="${process.env.FRONTEND_URL || 'http://localhost:5173'}/admin" style="background-color: #0f172a; color: white; padding: 12px 25px; text-decoration: none; border-radius: 6px; font-weight: bold;">
+                Ouvrir le Dashboard Admin
+              </a>
+            </div>
+          </div>
+        `
+      });
+    } catch(e) { console.error('Failed to notify Admin:', e); }
+
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

@@ -35,7 +35,7 @@ const STEPS = [
   { id: 6, title: "Récapitulatif", icon: CheckCircle },
 ];
 
-const STUDY_YEARS = ["1ère année", "2ème année", "3ème année", "M1"];
+const STUDY_YEARS = ["1ère année", "2ème année", "3ème année", "M1", "M2"];
 const DEPARTMENTS = ["RH", "Sponsoring", "Marketing"];
 const AXES = [
   { id: "Malnutrition", label: "Malnutrition", icon: "🍎" },
