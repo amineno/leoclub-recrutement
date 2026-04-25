@@ -167,9 +167,15 @@ exports.updateCandidateStatus = async (req, res) => {
             <p>Congratulations <span class="accent">${candidate.firstName}</span>!</p>
             <p>We are thrilled to inform you that your initial profile has successfully passed our review. You are now invited to <b>Phase 2</b> of our recruitment process.</p>
             <p>This phase is an advanced evaluation to understand your psychological reasoning, motivations, and problem-solving skills.</p>
-            <div style="text-align: center;">
-              <a href="${magicLink}" class="button">Access Phase 2 Evaluation</a>
+            <div style="text-align: center; margin: 30px 0;">
+              <a href="${magicLink}" style="background-color: #3b82f6; color: #ffffff; padding: 14px 28px; text-decoration: none; border-radius: 8px; font-weight: bold; display: inline-block; font-family: sans-serif; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);">
+                👉 ACCÉDER À LA PHASE 2 👈
+              </a>
             </div>
+            <p style="font-size: 13px; color: #64748b; margin-top: 20px;">
+              Si le bouton ne fonctionne pas, copiez ce lien exact et collez-le dans votre navigateur :<br/>
+              <a href="${magicLink}" style="color: #3b82f6; word-break: break-all;">${magicLink}</a>
+            </p>
             <p style="font-size: 11px; margin-top: 30px; color: #94a3b8;">This secure link will expire in 24 hours. Do not share it.</p>
           `, 'Welcome to Phase 2')
         });
