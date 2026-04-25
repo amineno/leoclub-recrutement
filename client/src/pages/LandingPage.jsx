@@ -3,7 +3,6 @@ import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { ArrowRight, Sparkles, Heart, Users, Target, CheckCircle2 } from 'lucide-react';
 import ThemeToggle from '../components/ThemeToggle';
-import heroImg from '../assets/hero.png';
 import { translations } from '../lib/translations';
 import { cn } from '../lib/utils';
 
@@ -160,11 +159,11 @@ const LandingPage = () => {
             transition={{ delay: 0.4, type: "spring", damping: 15 }}
             className="relative"
           >
-            <div className="relative z-10 glass-card p-4 rounded-[3rem] border-white/40 dark:border-slate-800/40">
+            <div className="relative z-10 p-8 rounded-[3rem]">
               <img 
-                src={heroImg} 
-                alt="Lions Club Activity" 
-                className="w-full h-auto rounded-[2.5rem] shadow-2xl"
+                src="/lionsClub-removebg-preview.png" 
+                alt="Lions Club Logo" 
+                className="w-full h-auto max-h-[500px] object-contain drop-shadow-2xl transform hover:scale-105 transition-transform duration-700"
               />
             </div>
             {/* Decorative Elements */}
