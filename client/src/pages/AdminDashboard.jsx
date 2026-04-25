@@ -1,18 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { 
-  Users, Search, Filter, Download, Trash2, Eye, 
+import {
+  Users, Search, Filter, Download, Trash2, Eye,
   ChevronDown, LayoutDashboard, LogOut, X, Check,
   BarChart2, PieChart as PieChartIcon, TrendingUp,
   FileText, Menu, Star, Calendar, Target, Loader2, ChevronLeft, ChevronRight,
   Settings, Home as HomeIcon, Shield, BrainCircuit
 } from 'lucide-react';
-import { 
-  BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, 
-  PieChart, Pie, Cell, Legend 
+import {
+  BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
+  PieChart, Pie, Cell, Legend
 } from 'recharts';
 import { cn } from '../lib/utils';
-import { 
+import {
   getCandidates, deleteCandidate, updateCandidate, updateCandidateStatus, exportCandidatesCSV, exportCandidatesExcel,
   getAdminProfile, updateAdminProfile
 } from '../services/api';
@@ -89,9 +89,9 @@ const AdminDashboard = () => {
   const fetchCandidates = async () => {
     setIsLoading(true);
     try {
-      const { data } = await getCandidates({ 
-        search: debouncedSearch, 
-        ...filter, 
+      const { data } = await getCandidates({
+        search: debouncedSearch,
+        ...filter,
         sort: 'newest',
         page: currentPage,
         limit: 10
@@ -124,12 +124,12 @@ const AdminDashboard = () => {
     try {
       const response = await updateCandidateStatus(id, { status, ...extraData });
       const data = response.data || response;
-      
+
       const statusLabel = status.includes('Accepted') ? 'acceptée' : status.includes('Rejected') ? 'refusée' : 'mise à jour';
       const statusIcon = status.includes('Accepted') ? '✅' : status.includes('Rejected') ? '❌' : '🔄';
-      
+
       toast.success(`Candidature ${statusLabel}`, { icon: statusIcon });
-      
+
       fetchCandidates();
       if (selectedCandidate?._id === id) {
         setSelectedCandidate(data);
@@ -148,9 +148,9 @@ const AdminDashboard = () => {
     setIsUpdating(true);
     try {
       await updateCandidate(id, data);
-      
+
       toast.success('Mis à jour avec succès');
-      
+
       fetchCandidates();
       if (selectedCandidate?._id === id) {
         setSelectedCandidate({ ...selectedCandidate, ...data });
@@ -164,28 +164,28 @@ const AdminDashboard = () => {
 
   const handleExport = async () => {
     try {
-      const response = await exportCandidatesExcel({ 
-        search: debouncedSearch, 
-        ...filter 
+      const response = await exportCandidatesExcel({
+        search: debouncedSearch,
+        ...filter
       });
-      
-      const blob = new Blob([response.data], { 
-        type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' 
+
+      const blob = new Blob([response.data], {
+        type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
       });
-      
+
       const url = window.URL.createObjectURL(blob);
       const link = document.createElement('a');
       link.href = url;
-      
+
       const date = new Date().toISOString().split('T')[0];
       link.setAttribute('download', `recrutement_lions_club_${date}.xlsx`);
-      
+
       document.body.appendChild(link);
       link.click();
-      
+
       document.body.removeChild(link);
       window.URL.revokeObjectURL(url);
-      
+
       toast.success('Export Excel (.xlsx) réussi', { icon: '📊' });
     } catch (error) {
       console.error('Export error:', error);
@@ -257,7 +257,7 @@ const AdminDashboard = () => {
         </div>
 
         <nav className="flex-1 space-y-3">
-          <button 
+          <button
             onClick={() => setView('home')}
             className={cn(
               "w-full flex items-center gap-4 p-4 rounded-[1.5rem] font-bold transition-all",
@@ -269,7 +269,7 @@ const AdminDashboard = () => {
             </div>
             Accueil
           </button>
-          <button 
+          <button
             onClick={() => setView('candidates')}
             className={cn(
               "w-full flex items-center gap-4 p-4 rounded-[1.5rem] font-bold transition-all",
@@ -281,7 +281,7 @@ const AdminDashboard = () => {
             </div>
             Candidats
           </button>
-          <button 
+          <button
             onClick={() => setView('settings')}
             className={cn(
               "w-full flex items-center gap-4 p-4 rounded-[1.5rem] font-bold transition-all",
@@ -295,7 +295,7 @@ const AdminDashboard = () => {
           </button>
         </nav>
 
-        <button 
+        <button
           onClick={logout}
           className="flex items-center gap-4 p-4 text-red-500 hover:bg-red-50 dark:hover:bg-red-950/20 rounded-2xl font-bold transition-all group border border-transparent hover:border-red-100 dark:hover:border-red-900/30"
         >
@@ -315,7 +315,7 @@ const AdminDashboard = () => {
         {/* Top Header */}
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 relative z-10">
           <div className="flex items-center gap-4 w-full md:w-auto">
-            <button 
+            <button
               onClick={() => setIsSidebarOpen(true)}
               className="lg:hidden p-3 bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-2xl shadow-sm hover:bg-slate-50 transition-colors"
             >
@@ -333,12 +333,12 @@ const AdminDashboard = () => {
           <div className="flex items-center gap-3 w-full md:w-auto overflow-x-auto pb-2 md:pb-0">
             <ThemeToggle />
             {view === 'candidates' && (
-              <button 
+              <button
                 onClick={handleExport}
                 className="flex items-center gap-3 px-6 py-3 bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-2xl font-bold text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800 transition-all shadow-sm hover:shadow-md active:scale-95 whitespace-nowrap"
               >
                 <div className="p-1.5 bg-primary/10 rounded-lg">
-                  <FileText size={18} className="text-primary" /> 
+                  <FileText size={18} className="text-primary" />
                 </div>
                 <span>Exporter</span>
               </button>
@@ -356,7 +356,7 @@ const AdminDashboard = () => {
                 { label: 'Acceptés Finaux', value: candidates.filter(c => c.status === 'Accepted Phase 2').length, icon: Check, color: 'bg-green-500' },
                 { label: 'Score Moyen P2', value: (candidates.filter(c => c.totalScore > 0).reduce((acc, c) => acc + (c.totalScore || 0), 0) / (candidates.filter(c => c.totalScore > 0).length || 1)).toFixed(1), icon: Star, color: 'bg-purple-500' },
               ].map((stat, i) => (
-                <motion.div 
+                <motion.div
                   key={i}
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
@@ -376,7 +376,7 @@ const AdminDashboard = () => {
 
             {/* Stats Grid (Charts) */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-8">
-              <motion.div 
+              <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 className="glass-card"
@@ -391,22 +391,22 @@ const AdminDashboard = () => {
                   <ResponsiveContainer width="100%" height="100%">
                     <BarChart data={deptStats}>
                       <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#F1F5F9" />
-                      <XAxis 
-                        dataKey="name" 
-                        axisLine={false} 
-                        tickLine={false} 
-                        tick={{ fontSize: 10, fontWeight: 600, fill: '#94A3B8' }} 
+                      <XAxis
+                        dataKey="name"
+                        axisLine={false}
+                        tickLine={false}
+                        tick={{ fontSize: 10, fontWeight: 600, fill: '#94A3B8' }}
                       />
-                      <YAxis 
-                        axisLine={false} 
-                        tickLine={false} 
-                        tick={{ fontSize: 10, fontWeight: 600, fill: '#94A3B8' }} 
+                      <YAxis
+                        axisLine={false}
+                        tickLine={false}
+                        tick={{ fontSize: 10, fontWeight: 600, fill: '#94A3B8' }}
                       />
-                      <Tooltip 
+                      <Tooltip
                         cursor={{ fill: 'rgba(59, 130, 246, 0.04)' }}
-                        contentStyle={{ 
-                          borderRadius: '16px', 
-                          border: '1px solid #F1F5F9', 
+                        contentStyle={{
+                          borderRadius: '16px',
+                          border: '1px solid #F1F5F9',
                           boxShadow: '0 10px 15px -3px rgba(0,0,0,0.05)',
                           padding: '12px',
                           fontSize: '12px',
@@ -419,7 +419,7 @@ const AdminDashboard = () => {
                 </div>
               </motion.div>
 
-              <motion.div 
+              <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 className="glass-card"
@@ -444,10 +444,10 @@ const AdminDashboard = () => {
                           <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                         ))}
                       </Pie>
-                      <Tooltip 
-                        contentStyle={{ 
-                          borderRadius: '16px', 
-                          border: '1px solid #F1F5F9', 
+                      <Tooltip
+                        contentStyle={{
+                          borderRadius: '16px',
+                          border: '1px solid #F1F5F9',
                           boxShadow: '0 10px 15px -3px rgba(0,0,0,0.05)',
                           padding: '12px',
                           fontSize: '12px',
@@ -460,7 +460,7 @@ const AdminDashboard = () => {
                 </div>
               </motion.div>
 
-              <motion.div 
+              <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 className="glass-card"
@@ -476,19 +476,19 @@ const AdminDashboard = () => {
                     <BarChart data={axisStats} layout="vertical">
                       <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="#F1F5F9" />
                       <XAxis type="number" hide />
-                      <YAxis 
-                        dataKey="name" 
-                        type="category" 
-                        axisLine={false} 
-                        tickLine={false} 
-                        tick={{ fontSize: 10, fontWeight: 600, fill: '#94A3B8' }} 
+                      <YAxis
+                        dataKey="name"
+                        type="category"
+                        axisLine={false}
+                        tickLine={false}
+                        tick={{ fontSize: 10, fontWeight: 600, fill: '#94A3B8' }}
                         width={100}
                       />
-                      <Tooltip 
+                      <Tooltip
                         cursor={{ fill: 'rgba(59, 130, 246, 0.04)' }}
-                        contentStyle={{ 
-                          borderRadius: '16px', 
-                          border: '1px solid #F1F5F9', 
+                        contentStyle={{
+                          borderRadius: '16px',
+                          border: '1px solid #F1F5F9',
                           boxShadow: '0 10px 15px -3px rgba(0,0,0,0.05)',
                           padding: '12px',
                           fontSize: '12px',
@@ -501,7 +501,7 @@ const AdminDashboard = () => {
                 </div>
               </motion.div>
 
-              <motion.div 
+              <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 className="glass-card"
@@ -526,10 +526,10 @@ const AdminDashboard = () => {
                           <Cell key={`cell-${index}`} fill={entry.color} />
                         ))}
                       </Pie>
-                      <Tooltip 
-                        contentStyle={{ 
-                          borderRadius: '16px', 
-                          border: '1px solid #F1F5F9', 
+                      <Tooltip
+                        contentStyle={{
+                          borderRadius: '16px',
+                          border: '1px solid #F1F5F9',
                           boxShadow: '0 10px 15px -3px rgba(0,0,0,0.05)',
                           padding: '12px',
                           fontSize: '12px',
@@ -548,149 +548,149 @@ const AdminDashboard = () => {
         {view === 'candidates' && (
           <div className="glass-card relative z-10 overflow-visible">
             <div className="flex flex-col xl:flex-row items-center gap-4 md:gap-6 mb-8">
-            <div className="relative flex-1 w-full group">
-              <Search className="absolute left-6 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-primary transition-colors" size={20} />
-              <input 
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                placeholder="Rechercher un talent..."
-                className="input-field pl-14 sm:pl-16 p-3 sm:p-4 md:p-5 text-sm sm:text-base md:text-lg font-medium text-slate-900"
-              />
+              <div className="relative flex-1 w-full group">
+                <Search className="absolute left-6 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-primary transition-colors" size={20} />
+                <input
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                  placeholder="Rechercher un talent..."
+                  className="input-field pl-14 sm:pl-16 p-3 sm:p-4 md:p-5 text-sm sm:text-base md:text-lg font-medium text-slate-900"
+                />
+              </div>
+              <div className="flex flex-col sm:flex-row gap-3 w-full xl:w-auto">
+                <div className="relative flex-1 xl:w-56">
+                  <select
+                    onChange={(e) => setFilter({ ...filter, studyYear: e.target.value })}
+                    className="input-field appearance-none px-6 py-4 md:py-5 pr-12 font-bold text-sm text-slate-700"
+                  >
+                    <option value="">Tous les niveaux</option>
+                    <option value="1ère année">1ère année</option>
+                    <option value="2ème année">2ème année</option>
+                    <option value="3ème année">3ème année</option>
+                    <option value="M1">M1</option>
+                  </select>
+                  <ChevronDown className="absolute right-5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" size="16" />
+                </div>
+                <div className="relative flex-1 xl:w-56">
+                  <select
+                    onChange={(e) => setFilter({ ...filter, axis: e.target.value })}
+                    className="input-field appearance-none px-6 py-4 md:py-5 pr-12 font-bold text-sm text-slate-700"
+                  >
+                    <option value="">Tous les axes</option>
+                    <option value="Malnutrition">Malnutrition</option>
+                    <option value="Environnement">Environnement</option>
+                    <option value="Diabète">Diabète</option>
+                    <option value="Vue">Vue</option>
+                    <option value="Cancer Infantile">Cancer</option>
+                  </select>
+                  <ChevronDown className="absolute right-5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" size="16" />
+                </div>
+                <div className="relative flex-1 xl:w-48">
+                  <select
+                    onChange={(e) => setFilter({ ...filter, status: e.target.value })}
+                    className="input-field appearance-none px-4 sm:px-6 py-3 sm:py-4 md:py-5 pr-10 sm:pr-12 font-bold text-xs sm:text-sm text-slate-700"
+                  >
+                    <option value="">Tous les status</option>
+                    <option value="Pending Phase 1">En attente P1</option>
+                    <option value="Pending Phase 2">En attente P2</option>
+                    <option value="Accepted Phase 2">Acceptés</option>
+                    <option value="Rejected Phase 1">Refusés P1</option>
+                  </select>
+                  <ChevronDown className="absolute right-4 sm:right-5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" size="16" />
+                </div>
+                <div className="relative flex-1 xl:w-40">
+                  <select
+                    onChange={(e) => setFilter({ ...filter, score: e.target.value })}
+                    className="input-field appearance-none px-6 py-4 md:py-5 pr-12 font-bold text-sm text-slate-700"
+                  >
+                    <option value="">Tous les scores</option>
+                    <option value="5">5 Étoiles</option>
+                    <option value="4">4 Étoiles</option>
+                    <option value="3">3 Étoiles</option>
+                    <option value="2">2 Étoiles</option>
+                    <option value="1">1 Étoile</option>
+                    <option value="0">0 Étoile</option>
+                  </select>
+                  <ChevronDown className="absolute right-5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" size="16" />
+                </div>
+              </div>
             </div>
-            <div className="flex flex-col sm:flex-row gap-3 w-full xl:w-auto">
-              <div className="relative flex-1 xl:w-56">
-                <select 
-                  onChange={(e) => setFilter({ ...filter, studyYear: e.target.value })}
-                  className="input-field appearance-none px-6 py-4 md:py-5 pr-12 font-bold text-sm text-slate-700"
-                >
-                  <option value="">Tous les niveaux</option>
-                  <option value="1ère année">1ère année</option>
-                  <option value="2ème année">2ème année</option>
-                  <option value="3ème année">3ème année</option>
-                  <option value="M1">M1</option>
-                </select>
-                <ChevronDown className="absolute right-5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" size="16" />
-              </div>
-              <div className="relative flex-1 xl:w-56">
-                <select 
-                  onChange={(e) => setFilter({ ...filter, axis: e.target.value })}
-                  className="input-field appearance-none px-6 py-4 md:py-5 pr-12 font-bold text-sm text-slate-700"
-                >
-                  <option value="">Tous les axes</option>
-                  <option value="Malnutrition">Malnutrition</option>
-                  <option value="Environnement">Environnement</option>
-                  <option value="Diabète">Diabète</option>
-                  <option value="Vue">Vue</option>
-                  <option value="Cancer Infantile">Cancer</option>
-                </select>
-                <ChevronDown className="absolute right-5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" size="16" />
-              </div>
-              <div className="relative flex-1 xl:w-48">
-                <select 
-                  onChange={(e) => setFilter({ ...filter, status: e.target.value })}
-                  className="input-field appearance-none px-4 sm:px-6 py-3 sm:py-4 md:py-5 pr-10 sm:pr-12 font-bold text-xs sm:text-sm text-slate-700"
-                >
-                  <option value="">Tous les status</option>
-                  <option value="Pending Phase 1">En attente P1</option>
-                  <option value="Pending Phase 2">En attente P2</option>
-                  <option value="Accepted Phase 2">Acceptés</option>
-                  <option value="Rejected Phase 1">Refusés P1</option>
-                </select>
-                <ChevronDown className="absolute right-4 sm:right-5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" size="16" />
-              </div>
-              <div className="relative flex-1 xl:w-40">
-                <select 
-                  onChange={(e) => setFilter({ ...filter, score: e.target.value })}
-                  className="input-field appearance-none px-6 py-4 md:py-5 pr-12 font-bold text-sm text-slate-700"
-                >
-                  <option value="">Tous les scores</option>
-                  <option value="5">5 Étoiles</option>
-                  <option value="4">4 Étoiles</option>
-                  <option value="3">3 Étoiles</option>
-                  <option value="2">2 Étoiles</option>
-                  <option value="1">1 Étoile</option>
-                  <option value="0">0 Étoile</option>
-                </select>
-                <ChevronDown className="absolute right-5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" size="16" />
-              </div>
-            </div>
-          </div>
 
-          <div className="overflow-x-auto -mx-4 md:-mx-0">
-            <div className="inline-block min-w-full align-middle px-4 md:px-0">
-              <table className="min-w-full border-separate border-spacing-y-3">
-                <thead>
-                  <tr className="text-left text-slate-400 uppercase text-[10px] font-black tracking-[0.2em]">
-                    <th className="pb-4 pl-6">Candidat</th>
-                    <th className="pb-4 hidden sm:table-cell">Niveau</th>
-                    <th className="pb-4 hidden md:table-cell">Département (P1)</th>
-                    <th className="pb-4">Statut</th>
-                    <th className="pb-4 pr-6 text-right">Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {candidates.map((c) => (
-                    <motion.tr 
-                      layout
-                      key={c._id} 
-                      className="group bg-[#F8FAFC]/50 dark:bg-slate-800/20 hover:bg-white dark:hover:bg-slate-800/40 transition-all border border-transparent hover:border-slate-200 dark:hover:border-slate-700 rounded-2xl"
-                    >
-                      <td className="py-5 pl-6 rounded-l-2xl md:rounded-l-[1.5rem] transition-colors">
-                        <div className="flex items-center gap-3 md:gap-4">
-                          <div className="w-10 h-10 md:w-12 md:h-12 bg-primary/10 text-primary rounded-xl flex items-center justify-center font-black text-base md:text-lg shrink-0">
-                          {(c.lastName || c.name || '?').charAt(0)}
-                        </div>
-                        <div className="min-w-0">
-                          <p className="font-bold text-sm md:text-lg truncate text-slate-900 dark:text-white">
-                            {c.lastName ? `${c.lastName} ${c.firstName}` : (c.name || 'Candidat Inconnu')}
-                          </p>
-                          <p className="text-[10px] md:text-xs text-slate-500 font-medium">{c.email || 'Pas d\'email'}</p>
-                        </div>
-                        </div>
-                      </td>
-                      <td className="py-5 font-bold text-slate-600 dark:text-slate-400 hidden sm:table-cell">
-                        {c.studyYear}
-                      </td>
-                      <td className="py-5 hidden md:table-cell">
-                        <span className="px-3 py-1 bg-primary/5 text-primary text-[10px] rounded-lg font-black uppercase tracking-wider border border-primary/10">
-                          {c.departments[0]}
-                        </span>
-                      </td>
-                      <td className="py-5">
-                        <span className={cn(
-                          "px-3 py-1 text-[8px] md:text-[10px] rounded-lg font-black uppercase tracking-widest",
-                          c.status.includes('Accepted') ? "bg-green-100 text-green-700 dark:bg-green-900/20 dark:text-green-400" :
-                          c.status.includes('Rejected') ? "bg-red-100 text-red-700 dark:bg-red-900/20 dark:text-red-400" :
-                          c.status === 'Pending Phase 2' ? "bg-purple-100 text-purple-700 dark:bg-purple-900/20 dark:text-purple-400" :
-                          "bg-yellow-100 text-yellow-700 dark:bg-yellow-900/20 dark:text-yellow-400"
-                        )}>
-                          {c.status.replace('Phase ', 'P')}
-                        </span>
-                      </td>
-                      <td className="py-5 pr-6 text-right rounded-r-2xl md:rounded-r-[1.5rem]">
-                        <div className="flex justify-end gap-1 md:gap-2">
-                          <button 
-                            onClick={() => setSelectedCandidate(c)}
-                            className="p-2 md:p-3 hover:bg-primary/10 text-slate-400 hover:text-primary rounded-xl transition-all active:scale-90"
-                          >
-                            <Eye size={18} className="md:w-5 md:h-5" />
-                          </button>
-                          <button 
-                            onClick={() => setCandidateToDelete(c)}
-                            className="p-2 md:p-3 hover:bg-red-50 text-slate-400 hover:text-red-500 rounded-xl transition-all active:scale-90"
-                          >
-                            <Trash2 size={18} className="md:w-5 md:h-5" />
-                          </button>
-                        </div>
-                      </td>
-                    </motion.tr>
-                  ))}
-                </tbody>
-              </table>
+            <div className="overflow-x-auto -mx-4 md:-mx-0">
+              <div className="inline-block min-w-full align-middle px-4 md:px-0">
+                <table className="min-w-full border-separate border-spacing-y-3">
+                  <thead>
+                    <tr className="text-left text-slate-400 uppercase text-[10px] font-black tracking-[0.2em]">
+                      <th className="pb-4 pl-6">Candidat</th>
+                      <th className="pb-4 hidden sm:table-cell">Niveau</th>
+                      <th className="pb-4 hidden md:table-cell">Département (P1)</th>
+                      <th className="pb-4">Statut</th>
+                      <th className="pb-4 pr-6 text-right">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {candidates.map((c) => (
+                      <motion.tr
+                        layout
+                        key={c._id}
+                        className="group bg-[#F8FAFC]/50 dark:bg-slate-800/20 hover:bg-white dark:hover:bg-slate-800/40 transition-all border border-transparent hover:border-slate-200 dark:hover:border-slate-700 rounded-2xl"
+                      >
+                        <td className="py-5 pl-6 rounded-l-2xl md:rounded-l-[1.5rem] transition-colors">
+                          <div className="flex items-center gap-3 md:gap-4">
+                            <div className="w-10 h-10 md:w-12 md:h-12 bg-primary/10 text-primary rounded-xl flex items-center justify-center font-black text-base md:text-lg shrink-0">
+                              {(c.lastName || c.name || '?').charAt(0)}
+                            </div>
+                            <div className="min-w-0">
+                              <p className="font-bold text-sm md:text-lg truncate text-slate-900 dark:text-white">
+                                {c.lastName ? `${c.lastName} ${c.firstName}` : (c.name || 'Candidat Inconnu')}
+                              </p>
+                              <p className="text-[10px] md:text-xs text-slate-500 font-medium">{c.email || 'Pas d\'email'}</p>
+                            </div>
+                          </div>
+                        </td>
+                        <td className="py-5 font-bold text-slate-600 dark:text-slate-400 hidden sm:table-cell">
+                          {c.studyYear}
+                        </td>
+                        <td className="py-5 hidden md:table-cell">
+                          <span className="px-3 py-1 bg-primary/5 text-primary text-[10px] rounded-lg font-black uppercase tracking-wider border border-primary/10">
+                            {c.departments[0]}
+                          </span>
+                        </td>
+                        <td className="py-5">
+                          <span className={cn(
+                            "px-3 py-1 text-[8px] md:text-[10px] rounded-lg font-black uppercase tracking-widest",
+                            c.status.includes('Accepted') ? "bg-green-100 text-green-700 dark:bg-green-900/20 dark:text-green-400" :
+                              c.status.includes('Rejected') ? "bg-red-100 text-red-700 dark:bg-red-900/20 dark:text-red-400" :
+                                c.status === 'Pending Phase 2' ? "bg-purple-100 text-purple-700 dark:bg-purple-900/20 dark:text-purple-400" :
+                                  "bg-yellow-100 text-yellow-700 dark:bg-yellow-900/20 dark:text-yellow-400"
+                          )}>
+                            {c.status.replace('Phase ', 'P')}
+                          </span>
+                        </td>
+                        <td className="py-5 pr-6 text-right rounded-r-2xl md:rounded-r-[1.5rem]">
+                          <div className="flex justify-end gap-1 md:gap-2">
+                            <button
+                              onClick={() => setSelectedCandidate(c)}
+                              className="p-2 md:p-3 hover:bg-primary/10 text-slate-400 hover:text-primary rounded-xl transition-all active:scale-90"
+                            >
+                              <Eye size={18} className="md:w-5 md:h-5" />
+                            </button>
+                            <button
+                              onClick={() => setCandidateToDelete(c)}
+                              className="p-2 md:p-3 hover:bg-red-50 text-slate-400 hover:text-red-500 rounded-xl transition-all active:scale-90"
+                            >
+                              <Trash2 size={18} className="md:w-5 md:h-5" />
+                            </button>
+                          </div>
+                        </td>
+                      </motion.tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             </div>
-          </div>
 
-          {/* Pagination */}
+            {/* Pagination */}
             {pages > 1 && (
               <div className="flex justify-center items-center gap-4 mt-8 pb-4">
                 <button
@@ -707,8 +707,8 @@ const AdminDashboard = () => {
                       onClick={() => setCurrentPage(i + 1)}
                       className={cn(
                         "w-10 h-10 rounded-xl font-bold text-sm transition-all active:scale-95",
-                        currentPage === i + 1 
-                          ? "bg-primary text-white shadow-lg shadow-primary/20" 
+                        currentPage === i + 1
+                          ? "bg-primary text-white shadow-lg shadow-primary/20"
                           : "bg-white dark:bg-slate-900 text-slate-400 hover:text-slate-600 border border-slate-100 dark:border-slate-800"
                       )}
                     >
@@ -739,7 +739,7 @@ const AdminDashboard = () => {
 
         {view === 'settings' && (
           <div className="max-w-2xl mx-auto space-y-8 relative z-10">
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               className="glass-card p-6 sm:p-8 md:p-12 space-y-8 sm:space-y-10"
@@ -757,7 +757,7 @@ const AdminDashboard = () => {
               <form onSubmit={handleProfileUpdate} className="space-y-6">
                 <div className="space-y-2">
                   <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 ml-2">Email de l'administrateur</label>
-                  <input 
+                  <input
                     type="email"
                     value={newEmail}
                     onChange={(e) => setNewEmail(e.target.value)}
@@ -767,7 +767,7 @@ const AdminDashboard = () => {
                 </div>
                 <div className="space-y-2">
                   <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 ml-2">Nouveau Mot de Passe</label>
-                  <input 
+                  <input
                     type="password"
                     value={newPassword}
                     onChange={(e) => setNewPassword(e.target.value)}
@@ -777,7 +777,7 @@ const AdminDashboard = () => {
                   <p className="text-[10px] text-slate-400 ml-2 italic">Laissez vide pour conserver le mot de passe actuel</p>
                 </div>
 
-                <button 
+                <button
                   disabled={isUpdating}
                   type="submit"
                   className="btn-primary w-full py-5 text-lg shadow-xl shadow-primary/20 flex items-center justify-center gap-3"
@@ -794,7 +794,7 @@ const AdminDashboard = () => {
                   <h4 className="font-black text-red-500 uppercase tracking-tight">Déconnexion</h4>
                   <p className="text-xs text-slate-500 font-medium">Fermer votre session actuelle</p>
                 </div>
-                <button 
+                <button
                   onClick={logout}
                   className="px-6 py-3 bg-red-50 text-red-500 rounded-xl font-bold hover:bg-red-100 transition-all border border-red-100"
                 >
@@ -810,7 +810,7 @@ const AdminDashboard = () => {
       <AnimatePresence>
         {selectedCandidate && (
           <div className="fixed inset-0 z-[60] flex items-center justify-center p-4">
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
@@ -902,14 +902,14 @@ const AdminDashboard = () => {
                         <div className="flex justify-between items-center mb-6">
                           <div>
                             <p className="text-3xl font-black text-slate-900 dark:text-white">{selectedCandidate.totalScore} <span className="text-lg text-slate-500">/ 100</span></p>
-                            <p className={cn("text-xs font-bold uppercase tracking-widest mt-1", 
+                            <p className={cn("text-xs font-bold uppercase tracking-widest mt-1",
                               selectedCandidate.classification === 'High Potential' ? 'text-green-500' :
-                              selectedCandidate.classification === 'Medium' ? 'text-yellow-500' : 'text-red-500'
+                                selectedCandidate.classification === 'Medium' ? 'text-yellow-500' : 'text-red-500'
                             )}>
                               {selectedCandidate.classification}
                             </p>
                           </div>
-                          
+
                           <div className="text-right">
                             <p className="text-xs font-bold text-slate-500 mb-1">Détail Score</p>
                             <div className="grid grid-cols-2 gap-x-6 gap-y-1 text-[10px] text-slate-400 font-bold">
@@ -949,29 +949,38 @@ const AdminDashboard = () => {
                   </>
                 )}
 
-                {selectedCandidate.status === 'Accepted Phase 2' && (
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-6">
-                    <div className="p-4 bg-green-50 dark:bg-green-900/10 border border-green-100 dark:border-green-800/30 rounded-2xl">
-                      <p className="text-[10px] text-green-600 dark:text-green-400 uppercase font-black tracking-widest mb-1">Date d'entretien</p>
-                      <p className="text-sm font-bold text-slate-900 dark:text-white">
-                        {selectedCandidate.interviewDate ? new Date(selectedCandidate.interviewDate).toLocaleString('fr-FR', { dateStyle: 'long', timeStyle: 'short' }) : 'Non planifié'}
-                      </p>
-                    </div>
-                    <div className="p-4 bg-blue-50 dark:bg-blue-900/10 border border-blue-100 dark:border-blue-800/30 rounded-2xl">
-                        <p className="text-[10px] text-blue-600 dark:text-blue-400 uppercase font-black tracking-widest mb-1">Note Envoyée</p>
-                        <p className="text-sm font-medium text-slate-700 dark:text-slate-300 italic">
-                          "{selectedCandidate.adminComment || 'Aucun commentaire'}"
-                        </p>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                  <div className="space-y-4">
+                    <p className="text-[10px] text-slate-400 uppercase font-black tracking-[0.2em]">Date d'entretien</p>
+                    <div className="relative group">
+                      <Calendar className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-primary transition-colors" size={20} />
+                      <input
+                        type="datetime-local"
+                        value={selectedCandidate.interviewDate ? new Date(selectedCandidate.interviewDate).toISOString().slice(0, 16) : ''}
+                        onChange={(e) => handleUpdate(selectedCandidate._id, { interviewDate: e.target.value })}
+                        className="input-field pl-12 p-4 text-sm font-bold"
+                      />
                     </div>
                   </div>
-                )}
+                </div>
+
+                <div className="space-y-4">
+                  <p className="text-[10px] text-slate-400 uppercase font-black tracking-[0.2em]">Commentaires Admin</p>
+                  <textarea
+                    value={selectedCandidate.notes || ''}
+                    onChange={(e) => setSelectedCandidate({ ...selectedCandidate, notes: e.target.value })}
+                    onBlur={() => handleUpdate(selectedCandidate._id, { notes: selectedCandidate.notes })}
+                    placeholder="Saisissez vos observations ici..."
+                    className="input-field p-4 md:p-6 min-h-[120px] md:min-h-[150px] resize-none text-base md:text-lg font-medium"
+                  />
+                </div>
               </div>
 
               <div className="p-6 md:p-8 bg-slate-50/50 dark:bg-slate-800/50 border-t border-slate-100 dark:border-slate-800 flex flex-col sm:flex-row justify-between items-center gap-4 cursor-default">
                 <div className="flex flex-wrap gap-3 md:gap-4 w-full sm:w-auto">
                   {selectedCandidate.phase === 1 && selectedCandidate.status === 'Pending Phase 1' && (
                     <>
-                      <button 
+                      <button
                         disabled={isUpdating}
                         onClick={() => handleStatusUpdate(selectedCandidate._id, 'Pending Phase 2')}
                         className="flex-1 sm:flex-none flex items-center justify-center gap-2 md:gap-3 px-6 md:px-8 py-3 md:py-4 bg-blue-600 text-white rounded-2xl md:rounded-[1.5rem] font-black uppercase tracking-widest text-[10px] hover:bg-blue-700 transition-all shadow-lg shadow-blue-600/20 active:scale-95 disabled:opacity-50"
@@ -979,7 +988,7 @@ const AdminDashboard = () => {
                         {isUpdating ? <Loader2 className="animate-spin" size={18} /> : <BrainCircuit size={18} className="md:w-5 md:h-5" />}
                         Inviter Phase 2
                       </button>
-                      <button 
+                      <button
                         disabled={isUpdating}
                         onClick={() => handleStatusUpdate(selectedCandidate._id, 'Rejected Phase 1')}
                         className="flex-1 sm:flex-none flex items-center justify-center gap-2 md:gap-3 px-6 md:px-8 py-3 md:py-4 bg-red-500 text-white rounded-2xl md:rounded-[1.5rem] font-black uppercase tracking-widest text-[10px] hover:bg-red-600 transition-all shadow-lg shadow-red-500/20 active:scale-95 disabled:opacity-50"
@@ -1000,40 +1009,40 @@ const AdminDashboard = () => {
                             </div>
                             <h3 className="text-sm font-black uppercase tracking-widest text-slate-900 dark:text-white">Détails de l'Acceptation</h3>
                           </div>
-                          
+
                           <div className="space-y-5">
                             <div>
                               <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-2 block">Date de l'Entretien</label>
-                              <input 
-                                type="datetime-local" 
+                              <input
+                                type="datetime-local"
                                 value={finalAcceptData.date}
                                 onChange={(e) => setFinalAcceptData({ ...finalAcceptData, date: e.target.value })}
                                 className="w-full p-4 bg-slate-100 dark:bg-slate-800 border-none rounded-2xl text-sm font-bold focus:ring-2 focus:ring-green-500 transition-all"
                               />
                             </div>
-                            
+
                             <div>
                               <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-2 block">Commentaire Personnalisé</label>
-                              <textarea 
+                              <textarea
                                 placeholder="Félicitez le candidat et donnez des précisions..."
                                 value={finalAcceptData.comment}
                                 onChange={(e) => setFinalAcceptData({ ...finalAcceptData, comment: e.target.value })}
                                 className="w-full p-4 bg-slate-100 dark:bg-slate-800 border-none rounded-2xl text-sm font-bold focus:ring-2 focus:ring-green-500 transition-all min-h-[100px] resize-none"
                               />
                             </div>
-                            
+
                             <div className="flex gap-4">
-                              <button 
+                              <button
                                 onClick={() => setFinalAcceptData({ show: false, date: '', comment: '' })}
                                 className="flex-1 p-4 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 rounded-2xl font-black uppercase tracking-widest text-[10px] hover:bg-slate-200 transition-all"
                               >
                                 Annuler
                               </button>
-                              <button 
+                              <button
                                 disabled={isUpdating}
-                                onClick={() => handleStatusUpdate(selectedCandidate._id, 'Accepted Phase 2', { 
-                                  interviewDate: finalAcceptData.date, 
-                                  adminComment: finalAcceptData.comment 
+                                onClick={() => handleStatusUpdate(selectedCandidate._id, 'Accepted Phase 2', {
+                                  interviewDate: finalAcceptData.date,
+                                  adminComment: finalAcceptData.comment
                                 })}
                                 className="flex-1 p-4 bg-green-600 text-white rounded-2xl font-black uppercase tracking-widest text-[10px] hover:bg-green-700 transition-all shadow-lg shadow-green-600/20"
                               >
@@ -1043,7 +1052,7 @@ const AdminDashboard = () => {
                           </div>
                         </div>
                       ) : (
-                        <button 
+                        <button
                           disabled={isUpdating}
                           onClick={() => setFinalAcceptData({ ...finalAcceptData, show: true })}
                           className="flex-1 sm:flex-none flex items-center justify-center gap-2 md:gap-3 px-6 md:px-8 py-3 md:py-4 bg-green-600 text-white rounded-2xl md:rounded-[1.5rem] font-black uppercase tracking-widest text-[10px] hover:bg-green-700 transition-all shadow-lg shadow-green-600/20 active:scale-95 disabled:opacity-50"
@@ -1052,9 +1061,9 @@ const AdminDashboard = () => {
                           Accepter Final
                         </button>
                       )}
-                      
+
                       {!finalAcceptData.show && (
-                        <button 
+                        <button
                           disabled={isUpdating}
                           onClick={() => handleStatusUpdate(selectedCandidate._id, 'Rejected Phase 2')}
                           className="flex-1 sm:flex-none flex items-center justify-center gap-2 md:gap-3 px-6 md:px-8 py-3 md:py-4 bg-red-500 text-white rounded-2xl md:rounded-[1.5rem] font-black uppercase tracking-widest text-[10px] hover:bg-red-600 transition-all shadow-lg shadow-red-500/20 active:scale-95 disabled:opacity-50"
@@ -1065,14 +1074,14 @@ const AdminDashboard = () => {
                       )}
                     </>
                   )}
-                  
+
                   {(selectedCandidate.status.includes('Accepted') || selectedCandidate.status.includes('Rejected')) && (
-                     <div className="flex items-center gap-2 text-slate-500 text-sm font-bold">
-                        Dossier traité ({selectedCandidate.status})
-                     </div>
+                    <div className="flex items-center gap-2 text-slate-500 text-sm font-bold">
+                      Dossier traité ({selectedCandidate.status})
+                    </div>
                   )}
                 </div>
-                <button 
+                <button
                   onClick={() => setCandidateToDelete(selectedCandidate)}
                   className="p-3 md:p-4 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-2xl transition-all active:scale-90"
                 >
@@ -1088,7 +1097,7 @@ const AdminDashboard = () => {
       <AnimatePresence>
         {candidateToDelete && (
           <div className="fixed inset-0 z-[70] flex items-center justify-center p-4">
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
@@ -1111,13 +1120,13 @@ const AdminDashboard = () => {
                 </p>
               </div>
               <div className="flex gap-4">
-                <button 
+                <button
                   onClick={() => setCandidateToDelete(null)}
                   className="flex-1 px-6 py-4 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 rounded-2xl font-bold hover:bg-slate-200 transition-all"
                 >
                   Annuler
                 </button>
-                <button 
+                <button
                   onClick={handleDelete}
                   className="flex-1 px-6 py-4 bg-red-500 text-white rounded-2xl font-bold hover:bg-red-600 transition-all shadow-lg shadow-red-500/20"
                 >
