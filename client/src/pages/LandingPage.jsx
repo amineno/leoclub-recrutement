@@ -161,10 +161,9 @@ const LandingPage = () => {
           >
             <div className="relative z-10 p-8 rounded-[3rem]">
               <img 
-                src="https://upload.wikimedia.org/wikipedia/en/5/52/Lions_Clubs_International_logo.svg" 
-                alt="Lions Club Logo 4K" 
-                className="w-full h-auto max-h-[550px] object-contain drop-shadow-[0_0_50px_rgba(255,255,255,0.2)] transform hover:scale-105 transition-transform duration-700 image-render-auto"
-                style={{ filter: 'drop-shadow(0 0 20px rgba(0,0,0,0.1)) contrast(1.05)' }}
+                src="/lionsClub-removebg-preview.png" 
+                alt="Lions Club Logo" 
+                className="w-full h-auto max-h-[500px] object-contain drop-shadow-2xl transform hover:scale-105 transition-transform duration-700"
               />
             </div>
             {/* Decorative Elements */}
