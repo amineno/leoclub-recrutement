@@ -15,6 +15,9 @@ app.use(express.json());
 app.use(morgan('dev'));
 
 // Routes
+app.get('/', (req, res) => {
+  res.json({ message: 'Leo Club Recruitment API is running' });
+});
 app.use('/api/auth', authRoutes);
 app.use('/api/candidates', candidateRoutes);
 
