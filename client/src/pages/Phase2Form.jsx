@@ -5,14 +5,90 @@ import { Mail, Briefcase, Users, Lightbulb, Target, BrainCircuit, ShieldAlert, H
 import toast from 'react-hot-toast';
 
 const SECTIONS = [
-  { id: 'motivation', title: 'General Motivation', icon: HeartHandshake, placeholder: 'Why do you want to join us? What drives you? Be specific about your personal values and how they align with our mission.', minWords: 30 },
-  { id: 'experience', title: 'Experience', icon: Briefcase, placeholder: 'Describe your past experiences (associations, projects, work). What did you build or achieve?', minWords: 20 },
-  { id: 'personalityTeamwork', title: 'Personality & Teamwork', icon: Users, placeholder: 'How do you operate in a team? Are you a leader, a mediator, an executor? Give an example of a conflict you resolved.', minWords: 30 },
-  { id: 'projectIdeation', title: 'Project Ideation', icon: Lightbulb, placeholder: 'Propose a concrete project (social, technical, or event) we haven\'t done yet. Detail the problem, your solution, and the first 3 steps to execute it.', minWords: 50 },
-  { id: 'expectationsSkills', title: 'Expectations & Skills', icon: Target, placeholder: 'What do you expect to learn from us? What hard/soft skills do you currently bring to the table?', minWords: 20 },
-  { id: 'behavioralThinking', title: 'Behavioral Thinking', icon: BrainCircuit, placeholder: 'If half your team suddenly quits two weeks before a major event, what is your immediate action plan?', minWords: 40 },
-  { id: 'situationalProblemSolving', title: 'Problem Solving', icon: ShieldAlert, placeholder: 'You are tasked with securing a sponsor for an event, but you have no network and 0 budget. How do you pitch and close the deal?', minWords: 40 },
-  // Communication is conditional, will be added dynamically
+  { 
+    id: 'motivation', 
+    title: 'Questions générales', 
+    icon: HeartHandshake, 
+    questions: [
+      "1. Pourquoi voulez-vous intégrer notre club ?",
+      "2. Qu'est-ce qui vous inspire à consacrer votre temps et vos efforts de manière bénévole plutôt que de vous engager dans d'autres activités ?",
+      "3. Comment pensez-vous que vos compétences et vos valeurs personnelles correspondent aux valeurs et à la mission de notre club ?"
+    ],
+    minWords: 30 
+  },
+  { 
+    id: 'experience', 
+    title: 'Expérience', 
+    icon: Briefcase, 
+    questions: [
+      "4. Avez-vous intégré un club ? Si oui : parlez-nous de votre expérience. Si non : pourquoi avez-vous choisi notre club comme première expérience ?"
+    ],
+    minWords: 30 
+  },
+  { 
+    id: 'personalityTeamwork', 
+    title: 'Travail en équipe & personnalité', 
+    icon: Users, 
+    questions: [
+      "5. Lorsque vous rencontrez des difficultés ou des obstacles, êtes-vous à l'aise de demander de l'aide ou des conseils aux autres membres ou au bureau exécutif ?",
+      "6. Quels sont les accomplissements dont vous êtes le(la) plus fier(e) dans votre vie personnelle ou professionnelle ?",
+      "7. Avez-vous déjà été confronté(e) à un échec ? Comment avez-vous géré cette expérience et qu'avez-vous appris ?"
+    ],
+    minWords: 40 
+  },
+  { 
+    id: 'projectIdeation', 
+    title: 'Projet / Idée', 
+    icon: Lightbulb, 
+    questions: [
+      "8. Choisir un axe (Malnutrition, Vue, Diabète, Environnement ou Cancer Infantile) et développer une idée d'action ou événement en précisant : Emplacement, Nom de l'action, Date, Sponsors, Matériel, Budget estimé."
+    ],
+    minWords: 50 
+  },
+  { 
+    id: 'expectationsSkills', 
+    title: 'Attentes & compétences', 
+    icon: Target, 
+    questions: [
+      "9. Quelles sont vos attentes concernant votre intégration au sein du club ?",
+      "10. Quelles sont les compétences essentielles pour réussir en RIL selon vous ?",
+      "11. Comment gérez-vous les différences d'opinions ou les conflits dans une équipe ?"
+    ],
+    minWords: 30 
+  },
+  { 
+    id: 'behavioralThinking', 
+    title: 'Questions comportementales', 
+    icon: BrainCircuit, 
+    questions: [
+      "12. Parle-moi d'une situation où tu as aidé quelqu'un sans qu'il te le demande. Pourquoi ?",
+      "13. Si tu avais un budget illimité pour un projet social, quelle cause soutiendrais-tu et pourquoi ?",
+      "14. Quelle valeur est la plus importante : solidarité, efficacité ou créativité ? Pourquoi ?",
+      "15. Quelle est la différence entre quelqu'un qui 'veut aider' et quelqu'un qui 'aide vraiment' ?",
+      "16. Raconte une expérience où tu as convaincu un groupe de ton idée.",
+      "17. En cas de désaccord dans l'équipe : imposer une décision, chercher un compromis ou laisser choisir ? Pourquoi ?",
+      "18. Si un membre ne respecte pas ses engagements, comment réagis-tu ?",
+      "19. Pour toi, un bon leader est : modèle, coach ou stratège ? Explique."
+    ],
+    minWords: 80 
+  },
+  { 
+    id: 'situationalProblemSolving', 
+    title: 'Mises en situation (MES)', 
+    icon: ShieldAlert, 
+    questions: [
+      "20. Conflit entre deux membres le jour J → réaction ?",
+      "21. Organisation d'un TeamBuilding avec manque de voitures → solution ?",
+      "22. Démotivation totale de l'équipe → que fais-tu ?",
+      "23. Transporteur ne répond pas le jour d'un événement → réaction ?",
+      "24. Conflit avec ton binôme → comportement ?",
+      "25. Manque d'espace pour stocker les dons → solution ?",
+      "26. Personne ne remplit le sheet → sous-effectif → réaction ?",
+      "27. Un autre club prend votre stand → que fais-tu ?",
+      "28. Manque de fonds pendant une action → solution ?"
+    ],
+    minWords: 80 
+  }
 ];
 
 export default function Phase2Form() {
@@ -71,13 +147,29 @@ export default function Phase2Form() {
         // Conditional Communication section
         const depts = data.candidate.departments || [];
         if (depts.some(d => d.toLowerCase().includes('marketing') || d.toLowerCase().includes('communication'))) {
-          setSections(prev => [...prev, { 
-            id: 'communication', 
-            title: 'Communication & PR', 
-            icon: Mail, 
-            placeholder: 'How would you write a pitch to a corporate sponsor or a press release for our next big charity event? Write a short draft.',
-            minWords: 30
-          }]);
+          setSections(prev => {
+            if (prev.some(s => s.id === 'communication')) return prev;
+            return [...prev, { 
+              id: 'communication', 
+              title: 'Communication (Com)', 
+              icon: Mail, 
+              questions: [
+                "29. Pourquoi as-tu choisi ce département ?",
+                "30. Quelles missions as-tu déjà réalisées en communication ?",
+                "31. Quels outils maîtrises-tu (design, photo, montage vidéo) ?",
+                "32. En retard pour un passage radio → réaction ?",
+                "33. Comment gères-tu un feedback négatif sur les réseaux sociaux ?",
+                "34. Un intervenant annule à la dernière minute → réorganisation ?",
+                "35. Quelles stratégies pour augmenter l'engagement sur les réseaux sociaux ?",
+                "36. Préparer un plan de communication (nom, slogan, publications, objectifs, budget)",
+                "37. Test designer : créer une affiche (Liens GDrive ici)",
+                "38. Test rédacteur : écrire un paragraphe LinkedIn",
+                "39. Bug Facebook/Instagram pendant 1 semaine → comment communiquer ?",
+                "40. Promesse de couverture médiatique à un sponsor sans mentionner son nom → solution ?"
+              ],
+              minWords: 30
+            }];
+          });
         }
 
         setLoading(false);
@@ -206,13 +298,28 @@ export default function Phase2Form() {
                 <h2 className="text-2xl font-bold text-white">{currentSection.title}</h2>
               </div>
 
-              <div className="flex-1 bg-white/[0.02] border border-white/5 rounded-3xl p-6 backdrop-blur-md shadow-2xl relative overflow-hidden group focus-within:border-blue-500/30 transition-colors duration-500">
+              <div className="flex-1 bg-white/[0.02] border border-white/5 rounded-3xl p-6 backdrop-blur-md shadow-2xl relative overflow-hidden group focus-within:border-blue-500/30 transition-colors duration-500 flex flex-col">
+                
+                {/* Render specific questions for this section */}
+                {currentSection.questions && (
+                  <div className="mb-6 pb-6 border-b border-white/5">
+                    <h3 className="text-sm font-bold text-slate-400 mb-3 tracking-wider">QUESTIONS À RÉPONDRE</h3>
+                    <ul className="space-y-3">
+                      {currentSection.questions.map((q, idx) => (
+                        <li key={idx} className="text-slate-200 font-medium leading-relaxed bg-white/5 p-3 rounded-xl border border-white/5 shadow-sm">
+                          {q}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+
                 <textarea
                   autoFocus
                   value={currentAnswer}
                   onChange={(e) => setAnswers({ ...answers, [currentSection.id]: e.target.value })}
-                  placeholder={currentSection.placeholder}
-                  className="w-full h-full min-h-[250px] bg-transparent resize-none outline-none text-lg md:text-xl text-slate-200 placeholder:text-slate-600 leading-relaxed font-light"
+                  placeholder={currentSection.placeholder || "Vos réponses ici..."}
+                  className="w-full flex-1 min-h-[250px] bg-transparent resize-none outline-none text-lg md:text-xl text-slate-300 placeholder:text-slate-600 leading-relaxed font-light"
                 />
                 
                 {/* Word Count Indicator */}
