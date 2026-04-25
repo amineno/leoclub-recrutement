@@ -25,7 +25,7 @@ exports.sendEmail = async ({ to, subject, html }) => {
     sendSmtpEmail.htmlContent = html;
     sendSmtpEmail.sender = {
       name: 'Leo Club Recruitment',
-      email: 'contact@leoclub.com'
+      email: 'leoclub.recrutement2026@gmail.com'
     };
     sendSmtpEmail.to = [{ email: to }];
 
