@@ -42,6 +42,7 @@ const AdminDashboard = () => {
   const [filter, setFilter] = useState({ studyYear: '', axis: '', department: '', status: '', score: '' });
   const [selectedCandidate, setSelectedCandidate] = useState(null);
   const [candidateToDelete, setCandidateToDelete] = useState(null);
+  const [finalAcceptData, setFinalAcceptData] = useState({ show: false, date: '', comment: '' });
   const [isLoading, setIsLoading] = useState(true);
   const [isUpdating, setIsUpdating] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -118,10 +119,10 @@ const AdminDashboard = () => {
     }
   };
 
-  const handleStatusUpdate = async (id, status) => {
+  const handleStatusUpdate = async (id, status, extraData = {}) => {
     setIsUpdating(true);
     try {
-      const response = await updateCandidateStatus(id, { status });
+      const response = await updateCandidateStatus(id, { status, ...extraData });
       const data = response.data || response;
       
       const statusLabel = status.includes('Accepted') ? 'acceptée' : status.includes('Rejected') ? 'refusée' : 'mise à jour';
@@ -133,6 +134,8 @@ const AdminDashboard = () => {
       if (selectedCandidate?._id === id) {
         setSelectedCandidate(data);
       }
+      // Reset final accept state
+      setFinalAcceptData({ show: false, date: '', comment: '' });
     } catch (error) {
       toast.error('Erreur lors de la mise à jour du statut');
       console.error(error);
@@ -998,22 +1001,77 @@ const AdminDashboard = () => {
 
                   {selectedCandidate.phase === 2 && selectedCandidate.status === 'Pending Phase 2' && (
                     <>
-                      <button 
-                        disabled={isUpdating}
-                        onClick={() => handleStatusUpdate(selectedCandidate._id, 'Accepted Phase 2')}
-                        className="flex-1 sm:flex-none flex items-center justify-center gap-2 md:gap-3 px-6 md:px-8 py-3 md:py-4 bg-green-600 text-white rounded-2xl md:rounded-[1.5rem] font-black uppercase tracking-widest text-[10px] hover:bg-green-700 transition-all shadow-lg shadow-green-600/20 active:scale-95 disabled:opacity-50"
-                      >
-                        {isUpdating ? <Loader2 className="animate-spin" size={18} /> : <Check size={18} className="md:w-5 md:h-5" />}
-                        Accepter Final
-                      </button>
-                      <button 
-                        disabled={isUpdating}
-                        onClick={() => handleStatusUpdate(selectedCandidate._id, 'Rejected Phase 2')}
-                        className="flex-1 sm:flex-none flex items-center justify-center gap-2 md:gap-3 px-6 md:px-8 py-3 md:py-4 bg-red-500 text-white rounded-2xl md:rounded-[1.5rem] font-black uppercase tracking-widest text-[10px] hover:bg-red-600 transition-all shadow-lg shadow-red-500/20 active:scale-95 disabled:opacity-50"
-                      >
-                        {isUpdating ? <Loader2 className="animate-spin" size={18} /> : <X size={18} className="md:w-5 md:h-5" />}
-                        Refuser P2
-                      </button>
+                      {finalAcceptData.show ? (
+                        <div className="flex-1 bg-white dark:bg-slate-900 p-6 rounded-3xl border border-green-500/20 shadow-2xl animate-in fade-in slide-in-from-bottom-4 duration-300">
+                          <div className="flex items-center gap-3 mb-6">
+                            <div className="p-2 bg-green-500/10 rounded-xl text-green-500">
+                              <Calendar size={20} />
+                            </div>
+                            <h3 className="text-sm font-black uppercase tracking-widest text-slate-900 dark:text-white">Détails de l'Acceptation</h3>
+                          </div>
+                          
+                          <div className="space-y-5">
+                            <div>
+                              <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-2 block">Date de l'Entretien</label>
+                              <input 
+                                type="datetime-local" 
+                                value={finalAcceptData.date}
+                                onChange={(e) => setFinalAcceptData({ ...finalAcceptData, date: e.target.value })}
+                                className="w-full p-4 bg-slate-100 dark:bg-slate-800 border-none rounded-2xl text-sm font-bold focus:ring-2 focus:ring-green-500 transition-all"
+                              />
+                            </div>
+                            
+                            <div>
+                              <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-2 block">Commentaire Personnalisé</label>
+                              <textarea 
+                                placeholder="Félicitez le candidat et donnez des précisions..."
+                                value={finalAcceptData.comment}
+                                onChange={(e) => setFinalAcceptData({ ...finalAcceptData, comment: e.target.value })}
+                                className="w-full p-4 bg-slate-100 dark:bg-slate-800 border-none rounded-2xl text-sm font-bold focus:ring-2 focus:ring-green-500 transition-all min-h-[100px] resize-none"
+                              />
+                            </div>
+                            
+                            <div className="flex gap-4">
+                              <button 
+                                onClick={() => setFinalAcceptData({ show: false, date: '', comment: '' })}
+                                className="flex-1 p-4 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 rounded-2xl font-black uppercase tracking-widest text-[10px] hover:bg-slate-200 transition-all"
+                              >
+                                Annuler
+                              </button>
+                              <button 
+                                disabled={isUpdating}
+                                onClick={() => handleStatusUpdate(selectedCandidate._id, 'Accepted Phase 2', { 
+                                  interviewDate: finalAcceptData.date, 
+                                  adminComment: finalAcceptData.comment 
+                                })}
+                                className="flex-1 p-4 bg-green-600 text-white rounded-2xl font-black uppercase tracking-widest text-[10px] hover:bg-green-700 transition-all shadow-lg shadow-green-600/20"
+                              >
+                                {isUpdating ? <Loader2 className="animate-spin" size={18} /> : 'Confirmer & Envoyer'}
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      ) : (
+                        <button 
+                          disabled={isUpdating}
+                          onClick={() => setFinalAcceptData({ ...finalAcceptData, show: true })}
+                          className="flex-1 sm:flex-none flex items-center justify-center gap-2 md:gap-3 px-6 md:px-8 py-3 md:py-4 bg-green-600 text-white rounded-2xl md:rounded-[1.5rem] font-black uppercase tracking-widest text-[10px] hover:bg-green-700 transition-all shadow-lg shadow-green-600/20 active:scale-95 disabled:opacity-50"
+                        >
+                          {isUpdating ? <Loader2 className="animate-spin" size={18} /> : <Check size={18} className="md:w-5 md:h-5" />}
+                          Accepter Final
+                        </button>
+                      )}
+                      
+                      {!finalAcceptData.show && (
+                        <button 
+                          disabled={isUpdating}
+                          onClick={() => handleStatusUpdate(selectedCandidate._id, 'Rejected Phase 2')}
+                          className="flex-1 sm:flex-none flex items-center justify-center gap-2 md:gap-3 px-6 md:px-8 py-3 md:py-4 bg-red-500 text-white rounded-2xl md:rounded-[1.5rem] font-black uppercase tracking-widest text-[10px] hover:bg-red-600 transition-all shadow-lg shadow-red-500/20 active:scale-95 disabled:opacity-50"
+                        >
+                          {isUpdating ? <Loader2 className="animate-spin" size={18} /> : <X size={18} className="md:w-5 md:h-5" />}
+                          Refuser P2
+                        </button>
+                      )}
                     </>
                   )}
                   

@@ -53,6 +53,7 @@ const candidateSchema = new mongoose.Schema({
 
   notes: { type: String, default: '' },
   interviewDate: { type: Date },
+  adminComment: { type: String, default: '' },
   createdAt: { type: Date, default: Date.now }
 });
 

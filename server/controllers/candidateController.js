@@ -203,17 +203,37 @@ exports.updateCandidateStatus = async (req, res) => {
     
     // 3. Accepted Final / Phase 2
     else if (status === 'Accepted Phase 2') {
+      const { interviewDate, adminComment } = req.body;
       candidate.status = 'Accepted Phase 2';
+      if (interviewDate) candidate.interviewDate = new Date(interviewDate);
+      if (adminComment) candidate.adminComment = adminComment;
+
+      const formattedDate = interviewDate 
+        ? new Date(interviewDate).toLocaleDateString('fr-FR', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' })
+        : 'À définir prochainement';
+
       try {
         await emailService.sendEmail({
           to: candidate.email,
-          subject: "Final Acceptance 🎉 Welcome to the Club!",
+          subject: "Félicitations ! 🎉 Bienvenue au Lions Club",
           html: getEmailTemplate(`
-            <p>Dear <span class="accent">${candidate.firstName}</span>,</p>
-            <p>We have truly enjoyed getting to know you. Your Phase 2 evaluation was exactly what we were looking for!</p>
-            <p>We are delighted to officially <b style="color: #10b981;">accept</b> you into the Lions Club.</p>
-            <p>Our team will contact you shortly with the onboarding details and upcoming meeting schedules.</p>
-          `, 'Congratulations! 🚀')
+            <p>Cher(e) <span class="accent">${candidate.firstName}</span>,</p>
+            <p>Nous avons le plaisir de vous informer que vous avez été officiellement <b>accepté(e)</b> au sein de notre club !</p>
+            
+            <div style="background: #f8fafc; padding: 20px; border-radius: 12px; margin: 25px 0; border-left: 4px solid #10b981;">
+              <p style="margin: 0 0 10px 0; color: #64748b; font-size: 12px; font-weight: bold; uppercase;">🗓 VOTRE ENTRETIEN DE BIENVENUE</p>
+              <p style="margin: 0; color: #0f172a; font-size: 16px; font-weight: bold;">${formattedDate}</p>
+            </div>
+
+            ${adminComment ? `
+            <div style="background: #eff6ff; padding: 20px; border-radius: 12px; margin: 25px 0; border-left: 4px solid #3b82f6;">
+              <p style="margin: 0 0 10px 0; color: #3b82f6; font-size: 12px; font-weight: bold; uppercase;">💬 NOTE DE L'ADMINISTRATION</p>
+              <p style="margin: 0; color: #1e40af; font-style: italic;">"${adminComment}"</p>
+            </div>
+            ` : ''}
+
+            <p>C'est le début d'une belle aventure humaine et sociale. Notre équipe vous contactera très bientôt pour les détails de l'intégration.</p>
+          `, 'Bienvenue dans la Famille ! 🚀')
         });
       } catch(e) { console.error('Failed to send final accept email:', e); }
     }
