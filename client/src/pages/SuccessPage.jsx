@@ -15,7 +15,7 @@ const SuccessPage = () => {
       <motion.div 
         initial={{ scale: 0.9, opacity: 0, y: 30 }}
         animate={{ scale: 1, opacity: 1, y: 0 }}
-        className="glass-card max-w-2xl w-full text-center space-y-10 relative z-10 p-8 md:p-16"
+        className="glass-card max-w-2xl w-full text-center space-y-8 md:space-y-10 relative z-10 p-6 sm:p-8 md:p-16"
       >
         {/* Animated Check Icon */}
         <div className="relative mx-auto w-32 h-32">
@@ -40,7 +40,7 @@ const SuccessPage = () => {
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.4 }}
-            className="text-4xl md:text-5xl font-black tracking-tight text-slate-900 dark:text-white"
+            className="text-3xl sm:text-4xl md:text-5xl font-black tracking-tight text-slate-900 dark:text-white"
           >
             Candidature <span className="gradient-text">Envoyée !</span>
           </motion.h1>
@@ -48,7 +48,7 @@ const SuccessPage = () => {
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.5 }}
-            className="text-slate-600 dark:text-slate-400 text-lg md:text-xl font-medium max-w-md mx-auto leading-relaxed"
+            className="text-slate-600 dark:text-slate-400 text-base sm:text-lg md:text-xl font-medium max-w-md mx-auto leading-relaxed"
           >
             Merci de votre intérêt pour le <span className="text-primary font-bold">Lions Club</span>. Votre profil est entre de bonnes mains.
           </motion.p>
@@ -62,13 +62,13 @@ const SuccessPage = () => {
         >
           <button 
             onClick={() => navigate('/')}
-            className="btn-primary"
+            className="btn-primary w-full py-3 sm:py-4 justify-center text-sm sm:text-base"
           >
-            <Home size={20} />
+            <Home size={18} className="sm:w-5 sm:h-5" />
             Retour à l'accueil
           </button>
           <button 
-            className="px-8 py-4 bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-200 rounded-2xl font-bold border-2 border-slate-100 dark:border-slate-800 hover:bg-slate-50 transition-all flex items-center justify-center gap-2 shadow-sm"
+            className="w-full py-3 sm:py-4 text-sm sm:text-base bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-200 rounded-2xl font-bold border-2 border-slate-100 dark:border-slate-800 hover:bg-slate-50 transition-all flex items-center justify-center gap-2 shadow-sm"
             onClick={() => {
               if (navigator.share) {
                 navigator.share({

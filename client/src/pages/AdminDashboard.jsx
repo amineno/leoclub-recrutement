@@ -311,10 +311,10 @@ const AdminDashboard = () => {
               <Menu size={24} className="text-slate-600" />
             </button>
             <div>
-              <h2 className="text-2xl md:text-4xl font-black tracking-tight text-slate-900 dark:text-white">
+              <h2 className="text-xl sm:text-2xl md:text-4xl font-black tracking-tight text-slate-900 dark:text-white">
                 {view === 'home' ? 'Tableau de bord' : view === 'candidates' ? 'Liste des Candidats' : 'Paramètres'}
               </h2>
-              <p className="text-sm md:text-base text-slate-500 font-medium">
+              <p className="text-xs sm:text-sm md:text-base text-slate-500 font-medium">
                 {view === 'home' ? 'Aperçu global de la campagne 2026' : view === 'candidates' ? 'Gestion des recrues et sélections' : 'Gérez votre compte et sécurité'}
               </p>
             </div>
@@ -350,14 +350,14 @@ const AdminDashboard = () => {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: i * 0.1 }}
-                  className="glass-card p-6 flex items-center gap-6"
+                  className="glass-card p-4 sm:p-6 flex items-center gap-4 sm:gap-6"
                 >
                   <div className={cn("w-14 h-14 rounded-2xl flex items-center justify-center text-white shadow-lg", stat.color)}>
                     <stat.icon size={28} />
                   </div>
                   <div>
-                    <p className="text-xs font-black uppercase tracking-widest text-slate-400">{stat.label}</p>
-                    <p className="text-3xl font-black text-slate-900 dark:text-white">{stat.value}</p>
+                    <p className="text-[10px] sm:text-xs font-black uppercase tracking-widest text-slate-400">{stat.label}</p>
+                    <p className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white">{stat.value}</p>
                   </div>
                 </motion.div>
               ))}
@@ -543,7 +543,7 @@ const AdminDashboard = () => {
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 placeholder="Rechercher un talent..."
-                className="input-field pl-16 p-4 md:p-5 text-base md:text-lg font-medium text-slate-900"
+                className="input-field pl-14 sm:pl-16 p-3 sm:p-4 md:p-5 text-sm sm:text-base md:text-lg font-medium text-slate-900"
               />
             </div>
             <div className="flex flex-col sm:flex-row gap-3 w-full xl:w-auto">
@@ -577,14 +577,14 @@ const AdminDashboard = () => {
               <div className="relative flex-1 xl:w-48">
                 <select 
                   onChange={(e) => setFilter({ ...filter, status: e.target.value })}
-                  className="input-field appearance-none px-6 py-4 md:py-5 pr-12 font-bold text-sm text-slate-700"
+                  className="input-field appearance-none px-4 sm:px-6 py-3 sm:py-4 md:py-5 pr-10 sm:pr-12 font-bold text-xs sm:text-sm text-slate-700"
                 >
                   <option value="">Tous les status</option>
                   <option value="Pending">En attente</option>
                   <option value="Accepted">Acceptés</option>
                   <option value="Rejected">Refusés</option>
                 </select>
-                <ChevronDown className="absolute right-5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" size="16" />
+                <ChevronDown className="absolute right-4 sm:right-5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" size="16" />
               </div>
               <div className="relative flex-1 xl:w-40">
                 <select 
@@ -729,7 +729,7 @@ const AdminDashboard = () => {
             <motion.div 
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
-              className="glass-card p-8 md:p-12 space-y-10"
+              className="glass-card p-6 sm:p-8 md:p-12 space-y-8 sm:space-y-10"
             >
               <div className="flex items-center gap-6">
                 <div className="w-20 h-20 bg-primary/10 text-primary rounded-[2rem] flex items-center justify-center shadow-inner">
@@ -758,7 +758,7 @@ const AdminDashboard = () => {
                     type="password"
                     value={newPassword}
                     onChange={(e) => setNewPassword(e.target.value)}
-                    className="input-field p-5"
+                    className="input-field p-4 sm:p-5"
                     placeholder="••••••••"
                   />
                   <p className="text-[10px] text-slate-400 ml-2 italic">Laissez vide pour conserver le mot de passe actuel</p>

@@ -32,7 +32,7 @@ const AdminLogin = () => {
   };
 
   return (
-    <div className={cn("min-h-screen flex items-center justify-center gradient-bg p-4 relative overflow-hidden", lang === 'ar' && "font-arabic")}>
+    <div className="min-h-screen flex items-center justify-center gradient-bg p-4 relative overflow-hidden">
       {/* Background Blobs */}
       <div className="floating-blob w-64 h-64 md:w-96 md:h-96 bg-primary -top-20 -left-20" />
       <div className="floating-blob w-64 h-64 md:w-80 md:h-80 bg-secondary -bottom-20 -right-20" style={{ animationDelay: '-5s' }} />
@@ -42,26 +42,26 @@ const AdminLogin = () => {
         animate={{ y: 0, opacity: 1 }}
         className="glass-card max-w-md w-full space-y-8 md:space-y-10 relative z-10 p-6 md:p-10"
       >
-        <div className={cn("flex justify-between items-center", lang === 'ar' && "flex-row-reverse")}>
+        <div className="flex justify-between items-center">
           <button 
             onClick={() => navigate('/')}
-            className={cn("flex items-center gap-2 text-xs font-bold text-slate-500 hover:text-primary transition-all group", lang === 'ar' && "flex-row-reverse")}
+            className="flex items-center gap-1 sm:gap-2 text-[10px] sm:text-xs font-bold text-slate-500 hover:text-primary transition-all group"
           >
-            {lang === 'ar' ? <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" /> : <ArrowLeft size={16} className="group-hover:-translate-x-1 transition-transform" />}
+            <ArrowLeft size={14} className="group-hover:-translate-x-1 transition-transform sm:w-4 sm:h-4" />
             {t.returnHome}
           </button>
           <div className="flex bg-slate-100 dark:bg-slate-800 p-1 rounded-xl">
             <button 
               onClick={() => setLang('fr')}
-              className={cn("px-2 py-1 text-[10px] font-bold rounded-lg transition-all", lang === 'fr' ? "bg-white dark:bg-slate-700 shadow-sm text-primary" : "text-slate-400")}
+              className={cn("px-2 sm:px-3 py-1 text-[10px] sm:text-xs font-bold rounded-lg transition-all", lang === 'fr' ? "bg-white dark:bg-slate-700 shadow-sm text-primary" : "text-slate-400")}
             >
               FR
             </button>
             <button 
-              onClick={() => setLang('ar')}
-              className={cn("px-2 py-1 text-[10px] font-bold rounded-lg transition-all", lang === 'ar' ? "bg-white dark:bg-slate-700 shadow-sm text-primary" : "text-slate-400")}
+              onClick={() => setLang('en')}
+              className={cn("px-2 sm:px-3 py-1 text-[10px] sm:text-xs font-bold rounded-lg transition-all", lang === 'en' ? "bg-white dark:bg-slate-700 shadow-sm text-primary" : "text-slate-400")}
             >
-              AR
+              EN
             </button>
           </div>
         </div>
@@ -76,15 +76,15 @@ const AdminLogin = () => {
             <img src="/lionsClub-removebg-preview.png" alt="Logo" className="w-full h-full object-cover" />
           </motion.div>
           <div className="space-y-1">
-            <h1 className="text-3xl md:text-4xl font-black tracking-tight uppercase">Admin</h1>
-            <p className="text-sm md:text-base text-slate-500 font-medium">Portail de gestion sécurisé</p>
+            <h1 className="text-2xl sm:text-3xl md:text-4xl font-black tracking-tight uppercase">{t.admin}</h1>
+            <p className="text-xs sm:text-sm md:text-base text-slate-500 font-medium">{t.adminPortal}</p>
           </div>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-6 md:space-y-8">
           <div className="space-y-4 md:space-y-5">
             <div className="space-y-2">
-              <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 ml-2">Identifiant</label>
+              <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 ml-2">{t.identifier}</label>
               <input
                 type="email"
                 required
@@ -95,7 +95,7 @@ const AdminLogin = () => {
               />
             </div>
             <div className="space-y-2">
-              <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 ml-2">Mot de passe</label>
+              <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 ml-2">{t.password}</label>
               <input
                 type="password"
                 required

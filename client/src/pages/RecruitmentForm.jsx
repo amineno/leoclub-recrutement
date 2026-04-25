@@ -197,70 +197,70 @@ const RecruitmentForm = () => {
                 {/* Step 1: Personal Info */}
                 {step === 1 && (
                   <div className="space-y-6">
-                    <div className="space-y-2">
-                      <h2 className="text-3xl font-black tracking-tight">Commençons par faire connaissance.</h2>
-                      <p className="text-slate-500 dark:text-slate-400">Remplissez vos informations personnelles pour continuer.</p>
+                    <div className="space-y-1 sm:space-y-2">
+                      <h2 className="text-2xl sm:text-3xl font-black tracking-tight">Commençons par faire connaissance.</h2>
+                      <p className="text-sm sm:text-base text-slate-500 dark:text-slate-400">Remplissez vos informations personnelles pour continuer.</p>
                     </div>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                      <div className="space-y-3">
-                        <label className="text-sm font-bold uppercase tracking-widest text-slate-400">Nom</label>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
+                      <div className="space-y-2 sm:space-y-3">
+                        <label className="text-xs sm:text-sm font-bold uppercase tracking-widest text-slate-400">Nom</label>
                         <input 
                           {...register('lastName')}
                           placeholder="Nom"
                           className={cn(
-                            "input-field text-xl font-medium p-6",
+                            "input-field text-lg sm:text-xl font-medium p-4 sm:p-6",
                             errors.lastName ? "border-red-500 bg-red-50/50" : ""
                           )}
                         />
                         {errors.lastName && <p className="text-red-500 text-xs font-bold">{errors.lastName.message}</p>}
                       </div>
-                      <div className="space-y-3">
-                        <label className="text-sm font-bold uppercase tracking-widest text-slate-400">Prénom</label>
+                      <div className="space-y-2 sm:space-y-3">
+                        <label className="text-xs sm:text-sm font-bold uppercase tracking-widest text-slate-400">Prénom</label>
                         <input 
                           {...register('firstName')}
                           placeholder="Prénom"
                           className={cn(
-                            "input-field text-xl font-medium p-6",
+                            "input-field text-lg sm:text-xl font-medium p-4 sm:p-6",
                             errors.firstName ? "border-red-500 bg-red-50/50" : ""
                           )}
                         />
                         {errors.firstName && <p className="text-red-500 text-xs font-bold">{errors.firstName.message}</p>}
                       </div>
                     </div>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                      <div className="space-y-3">
-                        <label className="text-sm font-bold uppercase tracking-widest text-slate-400">Email</label>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
+                      <div className="space-y-2 sm:space-y-3">
+                        <label className="text-xs sm:text-sm font-bold uppercase tracking-widest text-slate-400">Email</label>
                         <input 
                           {...register('email')}
                           type="email"
                           placeholder="Email"
                           className={cn(
-                            "input-field text-xl font-medium p-6",
+                            "input-field text-lg sm:text-xl font-medium p-4 sm:p-6",
                             errors.email ? "border-red-500 bg-red-50/50" : ""
                           )}
                         />
                         {errors.email && <p className="text-red-500 text-xs font-bold">{errors.email.message}</p>}
                       </div>
-                      <div className="space-y-3">
-                        <label className="text-sm font-bold uppercase tracking-widest text-slate-400">Téléphone</label>
+                      <div className="space-y-2 sm:space-y-3">
+                        <label className="text-xs sm:text-sm font-bold uppercase tracking-widest text-slate-400">Téléphone</label>
                         <input 
                           {...register('phone')}
                           placeholder="0X XX XX XX XX"
                           className={cn(
-                            "input-field text-xl font-medium p-6",
+                            "input-field text-lg sm:text-xl font-medium p-4 sm:p-6",
                             errors.phone ? "border-red-500 bg-red-50/50" : ""
                           )}
                         />
                         {errors.phone && <p className="text-red-500 text-xs font-bold">{errors.phone.message}</p>}
                       </div>
                     </div>
-                    <div className="space-y-3">
-                      <label className="text-sm font-bold uppercase tracking-widest text-slate-400">Date de naissance</label>
+                    <div className="space-y-2 sm:space-y-3">
+                      <label className="text-xs sm:text-sm font-bold uppercase tracking-widest text-slate-400">Date de naissance</label>
                       <input 
                         {...register('birthDate')}
                         type="date"
                         className={cn(
-                          "input-field text-xl font-medium p-6",
+                          "input-field text-lg sm:text-xl font-medium p-4 sm:p-6",
                           errors.birthDate ? "border-red-500 bg-red-50/50" : ""
                         )}
                       />
@@ -272,11 +272,11 @@ const RecruitmentForm = () => {
                 {/* Step 2: Study Level */}
                 {step === 2 && (
                   <div className="space-y-6">
-                    <div className="space-y-2">
-                      <h2 className="text-3xl font-black tracking-tight">Quel est votre niveau actuel ?</h2>
-                      <p className="text-slate-500 dark:text-slate-400">Sélectionnez votre année d'étude universitaire.</p>
+                    <div className="space-y-1 sm:space-y-2">
+                      <h2 className="text-2xl sm:text-3xl font-black tracking-tight">Quel est votre niveau actuel ?</h2>
+                      <p className="text-sm sm:text-base text-slate-500 dark:text-slate-400">Sélectionnez votre année d'étude universitaire.</p>
                     </div>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                       {STUDY_YEARS.map((year) => (
                         <motion.button
                           whileHover={{ scale: 1.02 }}
@@ -285,14 +285,14 @@ const RecruitmentForm = () => {
                           type="button"
                           onClick={() => setValue('studyYear', year, { shouldValidate: true })}
                           className={cn(
-                            "p-8 rounded-3xl border-2 transition-all text-left flex justify-between items-center group",
+                            "p-5 sm:p-8 rounded-2xl sm:rounded-3xl border-2 transition-all text-left flex justify-between items-center group",
                             formData.studyYear === year 
-                              ? "border-primary bg-primary/10 shadow-xl shadow-primary/10" 
+                              ? "border-primary bg-primary/10 shadow-lg shadow-primary/10" 
                               : "border-slate-100 dark:border-slate-800 hover:border-primary/40 bg-white dark:bg-slate-900/50 shadow-sm"
                           )}
                         >
                           <span className={cn(
-                            "text-xl font-bold",
+                            "text-lg sm:text-xl font-bold",
                             formData.studyYear === year ? "text-primary" : "text-slate-600 dark:text-slate-400"
                           )}>{year}</span>
                           <div className={cn(
@@ -311,11 +311,11 @@ const RecruitmentForm = () => {
                 {/* Step 3: Department Ranking */}
                 {step === 3 && (
                   <div className="space-y-6">
-                    <div className="space-y-2">
-                      <h2 className="text-3xl font-black tracking-tight">Choisissez vos départements.</h2>
-                      <p className="text-slate-500 dark:text-slate-400">Classez les départements par ordre de préférence (Top 3).</p>
+                    <div className="space-y-1 sm:space-y-2">
+                      <h2 className="text-2xl sm:text-3xl font-black tracking-tight">Choisissez vos départements.</h2>
+                      <p className="text-sm sm:text-base text-slate-500 dark:text-slate-400">Classez les départements par ordre de préférence (Top 3).</p>
                     </div>
-                    <div className="space-y-4">
+                    <div className="space-y-3 sm:space-y-4">
                       {DEPARTMENTS.map((dept) => {
                         const index = formData.departments.indexOf(dept);
                         return (
@@ -333,20 +333,20 @@ const RecruitmentForm = () => {
                               setValue('departments', current, { shouldValidate: true });
                             }}
                             className={cn(
-                              "w-full p-6 rounded-2xl border-2 flex justify-between items-center transition-all group",
+                              "w-full p-4 sm:p-6 rounded-xl sm:rounded-2xl border-2 flex justify-between items-center transition-all group",
                               index > -1 
-                                ? "border-primary bg-primary/10 shadow-lg" 
+                                ? "border-primary bg-primary/10 shadow-md sm:shadow-lg" 
                                 : "border-slate-100 dark:border-slate-800 hover:border-primary/40 bg-white dark:bg-slate-900/50 shadow-sm"
                             )}
                           >
-                            <div className="flex items-center gap-4">
+                            <div className="flex items-center gap-3 sm:gap-4">
                               <div className={cn(
-                                "w-12 h-12 rounded-xl flex items-center justify-center font-black transition-all",
+                                "w-10 h-10 sm:w-12 sm:h-12 rounded-lg sm:rounded-xl flex items-center justify-center font-black transition-all",
                                 index > -1 ? "bg-primary text-white" : "bg-slate-100 dark:bg-slate-800 text-slate-400"
                               )}>
                                 {index > -1 ? index + 1 : "?"}
                               </div>
-                              <span className="text-lg font-bold">{dept}</span>
+                              <span className="text-base sm:text-lg font-bold">{dept}</span>
                             </div>
                             <ChevronRight size={20} className={cn(
                               "transition-transform",
@@ -363,11 +363,11 @@ const RecruitmentForm = () => {
                 {/* Step 4: Preferred Axis */}
                 {step === 4 && (
                   <div className="space-y-6">
-                    <div className="space-y-2">
-                      <h2 className="text-3xl font-black tracking-tight">Quel axe vous passionne ?</h2>
-                      <p className="text-slate-500 dark:text-slate-400">Choisissez l'axe d'intervention qui vous correspond le mieux.</p>
+                    <div className="space-y-1 sm:space-y-2">
+                      <h2 className="text-2xl sm:text-3xl font-black tracking-tight">Quel axe vous passionne ?</h2>
+                      <p className="text-sm sm:text-base text-slate-500 dark:text-slate-400">Choisissez l'axe d'intervention qui vous correspond le mieux.</p>
                     </div>
-                    <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
                       {AXES.map((axis) => (
                         <motion.button
                           whileHover={{ scale: 1.05, y: -5 }}
@@ -375,14 +375,14 @@ const RecruitmentForm = () => {
                           type="button"
                           onClick={() => setValue('axis', axis.id, { shouldValidate: true })}
                           className={cn(
-                            "p-6 rounded-[2rem] border-2 flex flex-col items-center gap-4 transition-all",
+                            "p-4 sm:p-6 rounded-2xl sm:rounded-[2rem] border-2 flex sm:flex-col items-center gap-4 transition-all text-left sm:text-center",
                             formData.axis === axis.id 
-                              ? "border-primary bg-primary/10 shadow-xl" 
+                              ? "border-primary bg-primary/10 shadow-lg sm:shadow-xl" 
                               : "border-slate-100 dark:border-slate-800 hover:border-primary/40 bg-white dark:bg-slate-900/50 shadow-sm"
                           )}
                         >
                           <div className={cn(
-                            "w-20 h-20 rounded-3xl flex items-center justify-center text-4xl shadow-inner transition-all",
+                            "w-12 h-12 sm:w-20 sm:h-20 rounded-xl sm:rounded-3xl flex items-center justify-center text-2xl sm:text-4xl shadow-inner transition-all flex-shrink-0",
                             formData.axis === axis.id ? "bg-primary/20 scale-110" : "bg-slate-100 dark:bg-slate-800"
                           )}>
                             {axis.icon}
@@ -398,11 +398,11 @@ const RecruitmentForm = () => {
                 {/* Step 5: Skills */}
                 {step === 5 && (
                   <div className="space-y-6">
-                    <div className="space-y-2">
-                      <h2 className="text-3xl font-black tracking-tight">Quelles sont vos forces ?</h2>
-                      <p className="text-slate-500 dark:text-slate-400">Sélectionnez toutes les compétences que vous possédez.</p>
+                    <div className="space-y-1 sm:space-y-2">
+                      <h2 className="text-2xl sm:text-3xl font-black tracking-tight">Quelles sont vos forces ?</h2>
+                      <p className="text-sm sm:text-base text-slate-500 dark:text-slate-400">Sélectionnez toutes les compétences que vous possédez.</p>
                     </div>
-                    <div className="flex flex-wrap gap-3">
+                    <div className="flex flex-wrap gap-2 sm:gap-3">
                       {SKILLS.map((skill) => {
                         const isSelected = formData.skills.includes(skill);
                         return (
@@ -420,7 +420,7 @@ const RecruitmentForm = () => {
                               }
                             }}
                             className={cn(
-                              "px-6 py-3 rounded-2xl border-2 transition-all text-sm font-bold tracking-tight",
+                              "px-4 sm:px-6 py-2 sm:py-3 rounded-xl sm:rounded-2xl border-2 transition-all text-xs sm:text-sm font-bold tracking-tight",
                               isSelected 
                                 ? "bg-primary border-primary text-white shadow-xl shadow-primary/20" 
                                 : "border-slate-100 dark:border-slate-800 hover:border-primary/40 bg-white dark:bg-slate-900/50 text-slate-600 dark:text-slate-400 shadow-sm"
@@ -437,15 +437,15 @@ const RecruitmentForm = () => {
 
                 {/* Step 6: Review */}
                 {step === 6 && (
-                  <div className="space-y-8">
-                    <div className="space-y-2">
-                      <h2 className="text-3xl font-black tracking-tight">Presque fini !</h2>
-                      <p className="text-slate-500 dark:text-slate-400">Vérifiez vos informations avant de confirmer votre candidature.</p>
+                  <div className="space-y-6 sm:space-y-8">
+                    <div className="space-y-1 sm:space-y-2">
+                      <h2 className="text-2xl sm:text-3xl font-black tracking-tight">Presque fini !</h2>
+                      <p className="text-sm sm:text-base text-slate-500 dark:text-slate-400">Vérifiez vos informations avant de confirmer votre candidature.</p>
                     </div>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 bg-slate-100/30 dark:bg-slate-800/30 p-8 rounded-[2rem] border border-white/20">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 bg-slate-100/30 dark:bg-slate-800/30 p-5 sm:p-8 rounded-2xl sm:rounded-[2rem] border border-white/20">
                       <div className="space-y-1">
                         <p className="text-[10px] text-slate-400 uppercase font-black tracking-widest">Nom & Prénom</p>
-                        <p className="text-xl font-bold">{formData.lastName} {formData.firstName}</p>
+                        <p className="text-lg sm:text-xl font-bold">{formData.lastName} {formData.firstName}</p>
                       </div>
                       <div className="space-y-1">
                         <p className="text-[10px] text-slate-400 uppercase font-black tracking-widest">Email & Téléphone</p>
@@ -454,11 +454,11 @@ const RecruitmentForm = () => {
                       </div>
                       <div className="space-y-1">
                         <p className="text-[10px] text-slate-400 uppercase font-black tracking-widest">Date de naissance</p>
-                        <p className="text-xl font-bold">{formData.birthDate}</p>
+                        <p className="text-lg sm:text-xl font-bold">{formData.birthDate}</p>
                       </div>
                       <div className="space-y-1">
                         <p className="text-[10px] text-slate-400 uppercase font-black tracking-widest">Niveau d'étude</p>
-                        <p className="text-xl font-bold">{formData.studyYear}</p>
+                        <p className="text-lg sm:text-xl font-bold">{formData.studyYear}</p>
                       </div>
                       <div className="space-y-1">
                         <p className="text-[10px] text-slate-400 uppercase font-black tracking-widest">Départements</p>
@@ -470,8 +470,8 @@ const RecruitmentForm = () => {
                       </div>
                       <div className="space-y-1">
                         <p className="text-[10px] text-slate-400 uppercase font-black tracking-widest">Axe d'intervention</p>
-                        <p className="text-xl font-bold flex items-center gap-2">
-                          <span className="text-2xl">{AXES.find(a => a.id === formData.axis)?.icon}</span>
+                        <p className="text-lg sm:text-xl font-bold flex items-center gap-2">
+                          <span className="text-xl sm:text-2xl">{AXES.find(a => a.id === formData.axis)?.icon}</span>
                           {formData.axis}
                         </p>
                       </div>
@@ -487,15 +487,14 @@ const RecruitmentForm = () => {
                   </div>
                 )}
 
-                {/* Navigation */}
-                <div className="flex justify-between items-center pt-8 border-t border-slate-100 dark:border-slate-800">
+                <div className="flex flex-col-reverse sm:flex-row justify-between items-stretch sm:items-center gap-4 pt-6 sm:pt-8 border-t border-slate-100 dark:border-slate-800">
                   <button
                     type="button"
                     onClick={prevStep}
                     disabled={step === 1}
                     className={cn(
-                      "flex items-center gap-2 px-8 py-4 rounded-2xl font-bold transition-all",
-                      step === 1 ? "opacity-0 pointer-events-none" : "hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-500"
+                      "flex items-center justify-center gap-2 px-6 sm:px-8 py-3 sm:py-4 rounded-xl sm:rounded-2xl font-bold transition-all",
+                      step === 1 ? "hidden sm:flex opacity-0 pointer-events-none" : "hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-500"
                     )}
                   >
                     <ChevronLeft size={20} />
@@ -506,7 +505,7 @@ const RecruitmentForm = () => {
                     <button
                       type="button"
                       onClick={nextStep}
-                      className="btn-primary"
+                      className="btn-primary w-full sm:w-auto py-3 sm:py-4 justify-center"
                     >
                       Continuer
                       <ChevronRight size={20} />
@@ -515,7 +514,7 @@ const RecruitmentForm = () => {
                     <button
                       type="submit"
                       disabled={isSubmitting || !isValid}
-                      className="btn-primary bg-green-600 shadow-green-600/20 hover:shadow-green-600/40"
+                      className="btn-primary bg-green-600 shadow-green-600/20 hover:shadow-green-600/40 w-full sm:w-auto py-3 sm:py-4 justify-center"
                     >
                       {isSubmitting ? <Loader2 className="animate-spin" /> : "Confirmer ma candidature"}
                     </button>
