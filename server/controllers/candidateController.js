@@ -157,7 +157,8 @@ exports.updateCandidateStatus = async (req, res) => {
       candidate.status = 'Pending Phase 2'; // Formal schema state
       
       const appUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
-      const magicLink = `${appUrl}/continue?token=${token}`;
+      const safeToken = encodeURIComponent(token.trim());
+      const magicLink = `${appUrl}/continue?token=${safeToken}`;
       
       try {
         await emailService.sendEmail({

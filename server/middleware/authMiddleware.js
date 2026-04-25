@@ -23,8 +23,14 @@ exports.protectCandidate = (req, res, next) => {
     req.candidateAuth = { id: decoded.candidateId };
     next();
   } catch (error) {
-    console.error('JWT Verification Error:', error.message);
-    console.log('Secret check (length):', process.env.JWT_SECRET ? process.env.JWT_SECRET.length : 0);
-    res.status(401).json({ message: 'Token is not valid or expired. Please request a new link.' });
+    console.error('--- JWT FAILURE DETECTED ---');
+    console.error('Error Type:', error.name);
+    console.error('Error Msg:', error.message);
+    console.error('Secret check (length):', process.env.JWT_SECRET ? process.env.JWT_SECRET.length : 'UNDEFINED');
+    
+    if (error.name === 'TokenExpiredError') {
+      return res.status(401).json({ message: 'Lien expiré. Merci de demander un nouveau lien.' });
+    }
+    return res.status(401).json({ message: 'Lien invalide ou compromis (Invalid Signature).' });
   }
 };
