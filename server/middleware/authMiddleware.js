@@ -23,6 +23,8 @@ exports.protectCandidate = (req, res, next) => {
     req.candidateAuth = { id: decoded.candidateId };
     next();
   } catch (error) {
+    console.error('JWT Verification Error:', error.message);
+    console.log('Received raw token:', token);
     res.status(401).json({ message: 'Token is not valid or expired. Please request a new link.' });
   }
 };
