@@ -1003,9 +1003,16 @@ const AdminDashboard = () => {
                     <>
                       {finalAcceptData.show ? (
                         <div className="flex-1 bg-white dark:bg-slate-900 p-6 rounded-3xl border border-green-500/20 shadow-2xl animate-in fade-in slide-in-from-bottom-4 duration-300">
+                          <div className="flex items-center gap-3 mb-6">
+                            <div className="p-2 bg-green-500/10 rounded-xl text-green-500">
+                              <Calendar size={20} />
+                            </div>
+                            <h3 className="text-sm font-black uppercase tracking-widest text-slate-900 dark:text-white">Détails de l'Acceptation</h3>
+                          </div>
+                          
                           <div className="space-y-5">
                             <div>
-                              <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-2 block">📅 Date de l'Entretien</label>
+                              <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-2 block">Date de l'Entretien</label>
                               <input 
                                 type="datetime-local" 
                                 value={finalAcceptData.date}
@@ -1015,21 +1022,21 @@ const AdminDashboard = () => {
                             </div>
                             
                             <div>
-                              <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-2 block">💬 Commentaires Admin</label>
+                              <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-2 block">Commentaire Personnalisé</label>
                               <textarea 
-                                placeholder="Message pour le candidat..."
+                                placeholder="Félicitez le candidat et donnez des précisions..."
                                 value={finalAcceptData.comment}
                                 onChange={(e) => setFinalAcceptData({ ...finalAcceptData, comment: e.target.value })}
-                                className="w-full p-4 bg-slate-100 dark:bg-slate-800 border-none rounded-2xl text-sm font-bold focus:ring-2 focus:ring-green-500 transition-all min-h-[80px] resize-none"
+                                className="w-full p-4 bg-slate-100 dark:bg-slate-800 border-none rounded-2xl text-sm font-bold focus:ring-2 focus:ring-green-500 transition-all min-h-[100px] resize-none"
                               />
                             </div>
                             
                             <div className="flex gap-4">
                               <button 
                                 onClick={() => setFinalAcceptData({ show: false, date: '', comment: '' })}
-                                className="flex-1 p-3 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 rounded-xl font-bold uppercase text-[9px] hover:bg-slate-200 transition-all"
+                                className="flex-1 p-4 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 rounded-2xl font-black uppercase tracking-widest text-[10px] hover:bg-slate-200 transition-all"
                               >
-                                Retour
+                                Annuler
                               </button>
                               <button 
                                 disabled={isUpdating}
@@ -1037,9 +1044,9 @@ const AdminDashboard = () => {
                                   interviewDate: finalAcceptData.date, 
                                   adminComment: finalAcceptData.comment 
                                 })}
-                                className="flex-1 p-3 bg-green-600 text-white rounded-xl font-bold uppercase text-[9px] hover:bg-green-700 transition-all shadow-lg shadow-green-600/20"
+                                className="flex-1 p-4 bg-green-600 text-white rounded-2xl font-black uppercase tracking-widest text-[10px] hover:bg-green-700 transition-all shadow-lg shadow-green-600/20"
                               >
-                                {isUpdating ? <Loader2 className="animate-spin" size={14} /> : 'Confirmer Acceptation'}
+                                {isUpdating ? <Loader2 className="animate-spin" size={18} /> : 'Confirmer & Envoyer'}
                               </button>
                             </div>
                           </div>
