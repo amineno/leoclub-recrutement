@@ -66,7 +66,7 @@ const LandingPage = () => {
           <ThemeToggle />
           <button 
             onClick={() => navigate('/admin/login')}
-            className="text-sm font-bold text-slate-500 hover:text-primary transition-colors"
+            className="text-sm font-bold text-slate-500 hover:text-primary dark:text-slate-400 dark:hover:text-primary transition-colors"
           >
             {t.admin}
           </button>
@@ -145,7 +145,7 @@ const LandingPage = () => {
                   </div>
                 ))}
               </div>
-              <p className="text-sm font-bold text-slate-500">
+              <p className="text-sm font-bold text-slate-500 dark:text-slate-400">
                 {t.membersCount}
               </p>
             </motion.div>
@@ -174,7 +174,7 @@ const LandingPage = () => {
         <section id="discover" className="pt-20 lg:pt-32 space-y-12 lg:space-y-20">
           <div className="text-center space-y-4 px-4">
             <h3 className="text-3xl sm:text-4xl md:text-5xl font-black dark:text-white">{t.whyJoin}</h3>
-            <p className="text-slate-500 font-medium max-w-2xl mx-auto">
+            <p className="text-slate-500 dark:text-slate-400 font-medium max-w-2xl mx-auto">
               {t.clubDesc}
             </p>
           </div>
@@ -259,7 +259,7 @@ const LandingPage = () => {
             </div>
             <p className="font-black text-sm uppercase dark:text-white">Lions Club {t.recruitmentTitle}</p>
           </div>
-          <p className="text-slate-500 text-xs font-medium">
+          <p className="text-slate-500 dark:text-slate-500 text-xs font-medium">
             {t.copyright}
           </p>
         </div>
