@@ -52,19 +52,44 @@ exports.apply = async (req, res) => {
       });
     }
 
-    const candidate = new Candidate(req.body);
+    const candidate = new Candidate({
+      ...req.body,
+      status: 'Pending Phase 2',
+      phase: 2
+    });
+
+    const token = generatePhase2Token(candidate);
+    candidate.magicToken = token;
+    candidate.tokenExpiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours
+    
     await candidate.save();
 
-    // Send email notification using Brevo
+    // Send email notification with Phase 2 Link
     try {
+      const appUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
+      const safeToken = encodeURIComponent(token.trim());
+      const magicLink = `${appUrl}/continue?token=${safeToken}`;
+
       await emailService.sendEmail({
         to: email,
-        subject: 'Application Received - Lions Club',
+        subject: 'Candidature Reçue - Accès Phase 2 🚀',
         html: getEmailTemplate(`
-          <p>Hello <span class="accent">${req.body.firstName}</span>,</p>
-          <p>We have successfully received your application for the <b>Lions Club Recruitment 2026</b>.</p>
-          <p>Our team will carefully review your profile. You will hear back from us soon regarding the next steps.</p>
-        `, 'Application Received!')
+          <p>Bonjour <span class="accent">${req.body.firstName}</span>,</p>
+          <p>Nous avons bien reçu votre candidature pour le <b>Recrutement Lions Club 2026</b>.</p>
+          <p>Votre profil a été pré-sélectionné ! Vous pouvez maintenant passer à la <b>Phase 2</b> de notre évaluation.</p>
+          
+          <div style="text-align: center; margin: 30px 0;">
+              <a href="${magicLink}" style="background-color: #3b82f6; color: #ffffff; padding: 14px 28px; text-decoration: none; border-radius: 8px; font-weight: bold; display: inline-block; font-family: sans-serif; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);">
+                👉 COMMENCER LA PHASE 2 👈
+              </a>
+          </div>
+
+          <p style="font-size: 13px; color: #64748b; margin-top: 20px;">
+            Si le bouton ne fonctionne pas, utilisez ce lien :<br/>
+            <a href="${magicLink}" style="color: #3b82f6; word-break: break-all;">${magicLink}</a>
+          </p>
+          <p style="font-size: 11px; margin-top: 30px; color: #94a3b8;">Ce lien est sécurisé et expirera dans 24 heures.</p>
+        `, 'Bienvenue à la Phase 2 !')
       });
     } catch (err) {
       console.error('Initial application email failed, continuing...', err.message);
