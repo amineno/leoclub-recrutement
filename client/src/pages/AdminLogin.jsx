@@ -43,7 +43,7 @@ const AdminLogin = () => {
         className="glass-card max-w-md w-full space-y-8 md:space-y-10 relative z-10 p-6 md:p-10"
       >
         <div className="flex justify-between items-center">
-          <button 
+          <button
             onClick={() => navigate('/')}
             className="flex items-center gap-1 sm:gap-2 text-[10px] sm:text-xs font-bold text-slate-500 hover:text-primary transition-all group"
           >
@@ -51,13 +51,13 @@ const AdminLogin = () => {
             {t.returnHome}
           </button>
           <div className="flex bg-slate-100 dark:bg-slate-800 p-1 rounded-xl">
-            <button 
+            <button
               onClick={() => setLang('fr')}
               className={cn("px-2 sm:px-3 py-1 text-[10px] sm:text-xs font-bold rounded-lg transition-all", lang === 'fr' ? "bg-white dark:bg-slate-700 shadow-sm text-primary" : "text-slate-400")}
             >
               FR
             </button>
-            <button 
+            <button
               onClick={() => setLang('en')}
               className={cn("px-2 sm:px-3 py-1 text-[10px] sm:text-xs font-bold rounded-lg transition-all", lang === 'en' ? "bg-white dark:bg-slate-700 shadow-sm text-primary" : "text-slate-400")}
             >
@@ -67,7 +67,7 @@ const AdminLogin = () => {
         </div>
 
         <div className="text-center space-y-3 md:space-y-4">
-          <motion.div 
+          <motion.div
             initial={{ scale: 0 }}
             animate={{ scale: 1 }}
             transition={{ type: "spring", stiffness: 200, delay: 0.2 }}
@@ -90,7 +90,7 @@ const AdminLogin = () => {
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="admin@leoclub.com"
+                placeholder=""
                 className="input-field p-4 md:p-5 text-sm md:text-base"
               />
             </div>
@@ -101,14 +101,14 @@ const AdminLogin = () => {
                 required
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                placeholder="••••••••"
+                placeholder=""
                 className="input-field p-4 md:p-5 text-sm md:text-base"
               />
             </div>
           </div>
 
           {error && (
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
               className="bg-red-50 dark:bg-red-900/20 text-red-500 p-3 md:p-4 rounded-xl md:rounded-2xl text-xs md:text-sm font-bold text-center border border-red-100 dark:border-red-800"
