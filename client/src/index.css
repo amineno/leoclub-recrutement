@@ -9,12 +9,12 @@
 }
 
 @layer base {
-  body {
-    @apply bg-[#F8FAFC] text-slate-900 transition-colors duration-500 overflow-x-hidden;
+  html, body {
+    @apply bg-[#F8FAFC] text-slate-900 overflow-x-hidden;
     font-family: 'Inter', system-ui, -apple-system, sans-serif;
   }
   
-  .dark body {
+  .dark html, .dark body {
     @apply bg-[#030712] text-slate-50;
   }
 }

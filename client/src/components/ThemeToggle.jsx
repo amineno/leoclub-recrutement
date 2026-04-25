@@ -8,12 +8,15 @@ const ThemeToggle = () => {
   );
 
   useEffect(() => {
+    const metaThemeColor = document.querySelector('meta[name="theme-color"]');
     if (darkMode) {
       document.documentElement.classList.add('dark');
       localStorage.setItem('theme', 'dark');
+      if (metaThemeColor) metaThemeColor.setAttribute('content', '#030712');
     } else {
       document.documentElement.classList.remove('dark');
       localStorage.setItem('theme', 'light');
+      if (metaThemeColor) metaThemeColor.setAttribute('content', '#F8FAFC');
     }
   }, [darkMode]);
 
