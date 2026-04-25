@@ -8,6 +8,8 @@
   --color-accent: #10b981;
 }
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 @layer base {
   html, body {
     @apply bg-[#F8FAFC] text-slate-900 overflow-x-hidden;
